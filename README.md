@@ -48,12 +48,18 @@ These changed during extraction so the primitives don't drag the app with them:
 - **Styles** — fixed the `xyFromRadians` bug, moved to `sass:math` / `sass:list`
   module functions, and removed the app-specific root grid from the base reset.
 
-## TODO / not yet done
+## Not built yet
 
-- Library **build + publish** pipeline (bundle JS + compile/ship SCSS). Right
-  now packages are consumed from source via the workspace + Storybook.
+What runs today: both packages build to `dist/` (`pnpm build`) and pack cleanly;
+Storybook is the dev/docs environment. Still ahead:
+
+- **Dogfood into a real app** — consume the built/packed packages back into
+  `ac-booking` as the true end-to-end test.
 - A **CSS custom property** token layer so consumers can theme at runtime
   without recompiling Sass.
 - Port the component **tests** (Vitest) from the source app.
-- Wire a **git remote** / publish target (`gh` not installed locally yet).
+- **Publish** — packages are still `0.0.0` and unpublished; bump + `npm publish`.
 - Rename the `ac` color family to something brand-neutral.
+
+Decisions and standards live in [`docs/`](./docs) (a git-tracked vault); the
+things we've deliberately chosen *not* to do are in [`docs/scope.md`](./docs/scope.md).

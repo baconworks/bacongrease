@@ -67,6 +67,47 @@ bundling. Both currently pass. The `"use client"` warnings during the build are
 - **Components** are default-exported; the barrel re-exports them as named
   (`Button`, `Modal`, …) plus their prop types.
 
+## Working conventions (how to operate here)
+
+Standing preferences for how work gets done in this repo — general, not
+app-specific. The detail for the docs vault lives in [`docs/README.md`](./docs/README.md).
+
+**Working style.**
+- No sycophancy. If a plan is wrong, say so and why — don't validate to agree.
+- Flag best-practice violations proactively; the convention may be unknown. When
+  the ask and the right thing differ, do the right thing or say so.
+- State uncertainty and give options — don't guess fluently. Never fabricate
+  specifics (APIs, config keys, versions); verify or ask.
+- Verify before claiming done — exercise the change (here: `pnpm typecheck` +
+  `pnpm build-storybook`, and run the affected flow), don't just typecheck.
+  Report failures with output.
+- Cut scope when in doubt; flag drift.
+
+**Git workflow.** One short-lived branch per change off `main`, one at a time —
+never stack. PR every change (code *and* docs); the PR is the self-review
+checkpoint. Squash-merge, then delete the branch. Never merge red. **Commit/push
+only when asked.**
+
+**docs/ as a vault.** `docs/` is for thinking about the code (decisions,
+standards, scope) — if code loads it at runtime, it's code and ships elsewhere.
+Front-matter on every `.md`; relative Markdown links, never wikilinks; reuse the
+tag vocabulary. `docs/scope.md` is the NOT-DOING list. Don't write ahead of
+reality. See [`docs/README.md`](./docs/README.md).
+
+**ADRs.** Architecturally significant decisions get an ADR in `docs/adr/`,
+shipped in the same PR as the code it decides — immutable, superseded not
+edited. Settled pre-existing decisions stay as prose here; don't backfill.
+Format in [`docs/adr/README.md`](./docs/adr/README.md).
+
+**README honesty.** The README describes what runs *today*, never aspirational.
+A new fresh-machine requirement gets documented in the same change. Unbuilt
+things go under "Not built yet."
+
+**CLAUDE.md maintenance.** Keep "Current status" honest — move Done /
+Not-done / open-questions in the same change that moves them. A hard rule may get
+a cheap mechanical guard (gitignore line, hook), but the guard isn't the policy —
+this file is.
+
 ## How SCSS resolution works (important)
 
 Component stylesheets reference the design system with **bare specifiers**:
@@ -75,10 +116,11 @@ These resolve because `.storybook/main.ts` sets
 `css.preprocessorOptions.scss.loadPaths` to `packages/styles/src`. Inside the
 styles package, files use relative `@use './variables'` etc.
 
-Consequence: **any future bundler/build must reproduce those loadPaths**, or the
-bare `@use`s won't resolve. This is the main open design question for publishing
-(see TODO). Intra-package `@use '../hamburger/hamburger.styles'` (sidenav) uses
-normal relative paths and is fine.
+Consequence: **any bundler/build must reproduce those loadPaths**, or the bare
+`@use`s won't resolve. The lib build already does (see "Build pipeline" below) —
+this was the open publishing question and it's now closed. Intra-package
+`@use '../hamburger/hamburger.styles'` (sidenav) uses normal relative paths and
+is fine.
 
 ## Decoupling decisions already made (don't undo without reason)
 
@@ -167,6 +209,9 @@ both green, committed on `main`):
 - ✅ **Build + publish pipeline** — both packages build to `dist/` and `npm
   pack` cleanly (see "Build pipeline" section below). `pnpm build` at the root
   runs both. Verified: typecheck + build-storybook + pack dry-run all green.
+- ✅ **Working conventions + `docs/` vault** — standing process preferences
+  documented above; `docs/` holds decisions/standards/scope with an ADR log
+  (`docs/adr/`, none written yet) and the NOT-DOING list (`docs/scope.md`).
 
 **Not done yet — likely next steps, roughly in priority order:**
 
