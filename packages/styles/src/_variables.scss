@@ -1,0 +1,110 @@
+/*
+  * This file contains global variables. It does not need
+  * to be included at the global level, but should be included via
+  * @use './variables' in any .scss file that relies on these variables.
+*/
+@use './functions';
+
+// animations
+$transition-timing-default: .5s;
+$transition-function-default: ease-in-out;
+
+// breakpoints
+$breakpoint-xl: 1100px;
+$breakpoint-lg: 875px;
+$breakpoint-md: 750px;
+$breakpoint-sm: 600px;
+$breakpoint-xs: 350px;
+
+$color-scale-lightness-md: 40%;
+
+// linear gradients
+$gradient-angle: 115deg;
+
+$gradient-primary-linear: functions.createGradientFromColorMap(
+  $gradient-angle,
+  primary
+);
+
+$gradient-primary-linear-transparent: functions.createGradientFromColorMap(
+  $gradient-angle,
+  primaryTransparent
+);
+
+$gradient-secondary-linear: functions.createGradientFromColorMap(
+  $gradient-angle,
+  secondary
+);
+
+$gradient-tertiary-linear: functions.createGradientFromColorMap(
+  $gradient-angle,
+  tertiary
+);
+
+$gradient-greyscale-linear: functions.createGradientFromColorMap(
+  $gradient-angle,
+  greyscale,
+  $endColor: 1200
+);
+
+$gradient-greyscale-linear-transparent: functions.createGradientFromColorMap(
+  $gradient-angle,
+  greyscaleTransparent,
+  $endColor: 1200
+);
+
+// anonymous gradients
+$gradient-anonymous-blue-to-purple: linear-gradient(
+  135deg,
+  functions.getColor(ac, blue) 0%,
+  functions.getColor(ac, purple) 100%
+);
+
+$gradient-anonymous-teal-to-green: linear-gradient(
+  135deg,
+  functions.getColor(ac, teal) 0%,
+  functions.getColor(ac, green) 100%
+);
+
+$gradient-anonymous-yellow-to-orange: linear-gradient(
+  135deg,
+  functions.getColor(ac, yellow) 0%,
+  functions.getColor(ac, orange) 100%
+);
+
+$gradient-anonymous-orange-to-red: linear-gradient(
+  135deg,
+  functions.getColor(ac, orange) 0%,
+  functions.getColor(ac, red) 100%
+);
+
+$gradient-anonymous-white-to-grey: linear-gradient(
+  135deg,
+  functions.getColor(ac, white) 0%,
+  functions.getColor(ac, grey) 100%
+);
+
+// shadows
+$shadow-default: inset 0 0 0.5px 1px hsla(0, 0%, 100%, 0.075),
+                 /* shadow ring */
+                 0 0 0 1px hsla(0, 0%, 0%, 0.05),
+                 /* multiple soft shadows */
+                 0 0.3px 0.4px hsla(0, 0%, 0%, 0.02),
+                 0 0.9px 1.5px hsla(0, 0%, 0%, 0.045),
+                 0 3.5px 6px hsla(0, 0%, 0%, 0.09);
+
+// sizing
+$header-height: 5rem;
+$side-tools: 48px;
+$sidenav-collapsed: 64px; // best practice 48-64px
+$sidenav-expanded: 240px; // best practice 240-300px
+
+// spacing
+$padding-nav: 0rem;
+
+// typography
+$font-size-default: clamp(1.3rem, 2vw, 1.6rem);
+$line-height-default: calc($font-size-default * 1.618);
+$font-size-h1: 4.19rem;
+$font-copy: 'quiet-sans', sans-serif;
+$font-header: 'quiet-sans', sans-serif;

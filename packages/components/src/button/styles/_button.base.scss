@@ -1,0 +1,205 @@
+@use './button.variables' as buttonVariables;
+@use './button.mixins' as buttonMixins;
+@use 'mixins' as globalMixins;
+
+// BUTTON STYLES
+.button {
+  cursor: pointer;
+  // positioning
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: buttonVariables.$button-gap;
+
+  // sizing
+  min-width: buttonVariables.$button-min-width;
+
+  // spacing
+  padding: buttonVariables.$button-padding;
+
+  // border
+  border: buttonVariables.$button-border;
+  border-radius: buttonVariables.$button-border-radius;
+
+  // color
+  color: buttonVariables.$button-text-color;
+
+  &:disabled,
+  button[disabled] {
+    cursor: not-allowed;
+    opacity: .3;
+  }
+
+  &_image {
+    height: 100%;
+    width: auto;
+  }
+
+  // VARIANT STYLES
+  &--primary {
+    @include buttonMixins.setButtonVariant(
+      $backgroundColor: buttonVariables.$button-color-primary
+    );
+  }
+
+  &--secondary {
+    @include buttonMixins.setButtonVariant(
+      $backgroundColor: buttonVariables.$button-color-secondary
+    );
+  }
+
+  &--tertiary {
+    @include buttonMixins.setButtonVariant(
+      $backgroundColor: buttonVariables.$button-color-tertiary
+    );
+  }
+
+  &--greyscale {
+    @include buttonMixins.setButtonVariant(
+      $backgroundColor: buttonVariables.$button-color-black
+    );
+  }
+
+  &--microsoft-dark {
+    @include buttonMixins.setButtonVariant(
+      $fontFamily: buttonVariables.$button-font-family-microsoft,
+      $fontWeight: buttonVariables.$button-font-weight-microsoft,
+      $color: buttonVariables.$button-color-microsoft-text-light,
+      $backgroundColor: buttonVariables.$button-color-microsoft-bg-dark
+    );
+  }
+
+  &--microsoft-light {
+    @include buttonMixins.setButtonVariant(
+      $fontFamily: buttonVariables.$button-font-family-microsoft,
+      $fontWeight: buttonVariables.$button-font-weight-microsoft,
+      $color: buttonVariables.$button-color-microsoft-text-dark,
+      $backgroundColor: buttonVariables.$button-color-microsoft-bg-light
+    );
+  }
+
+  // CIRCLE STYLES
+  &--circle {
+    @include globalMixins.circle;
+  }
+
+  // INVERT STYLES
+  &--invert {
+    filter: invert(1);
+  }
+
+  // PILL STYLES
+  &--pill {
+    border-radius: buttonVariables.$button-pill-radius;
+  }
+
+  // REVERSE STYLES
+  &--reverse {
+    flex-direction: row-reverse;
+  }
+
+  // SHADOW STYLES
+  &--shadow {
+    box-shadow: buttonVariables.$button-shadow;
+  }
+
+  &--text.button--shadow {
+    box-shadow: none;
+    text-shadow: buttonVariables.$button-shadow-text;
+  }
+
+  // OUTLINE STYLES
+  &--primary.button--outline {
+    @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-primary);
+  }
+
+  &--secondary.button--outline {
+    @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-secondary);
+  }
+
+  &--tertiary.button--outline {
+    @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-tertiary);
+  }
+
+  &--greyscale.button--outline {
+    @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-black);
+  }
+
+  &--microsoft-light.button--outline {
+    @include buttonMixins.setButtonOutlineStyles(
+      buttonVariables.$button-color-microsoft-outline-light
+    );
+  }
+
+  // GRADIENT STYLES
+  &--primary.button--gradient {
+    @include buttonMixins.setButtonGradientStyles(buttonVariables.$button-gradient-primary-linear);
+  }
+
+  &--secondary.button--gradient {
+    @include buttonMixins.setButtonGradientStyles(buttonVariables.$button-gradient-secondary-linear);
+  }
+
+  &--tertiary.button--gradient {
+    @include buttonMixins.setButtonGradientStyles(buttonVariables.$button-gradient-tertiary-linear);
+  }
+
+  &--greyscale.button--gradient {
+    @include buttonMixins.setButtonGradientStyles(buttonVariables.$button-gradient-greyscale-linear);
+  }
+
+  // OUTLINE W/GRADIENT STYLES
+  &--primary.button--outline.button--gradient {
+    @include buttonMixins.setButtonOutlineGradientStyles(buttonVariables.$button-gradient-primary-linear);
+  }
+
+  &--secondary.button--outline.button--gradient {
+    @include buttonMixins.setButtonOutlineGradientStyles(buttonVariables.$button-gradient-secondary-linear);
+  }
+
+  &--tertiary.button--outline.button--gradient {
+    @include buttonMixins.setButtonOutlineGradientStyles(buttonVariables.$button-gradient-tertiary-linear);
+  }
+
+  &--greyscale.button--outline.button--gradient {
+    @include buttonMixins.setButtonOutlineGradientStyles(buttonVariables.$button-gradient-greyscale-linear);
+  }
+
+  // TEXT AND TEXT WITH OUTLINES STYLES
+  &--primary.button--text,
+  &--primary.button--text.button--outline {
+    @include buttonMixins.setButtonTextStyles(buttonVariables.$button-color-primary);
+  }
+
+  &--secondary.button--text,
+  &--secondary.button--text.button--outline {
+    @include buttonMixins.setButtonTextStyles(buttonVariables.$button-color-secondary);
+  }
+
+  &--tertiary.button--text,
+  &--tertiary.button--text.button--outline {
+    @include buttonMixins.setButtonTextStyles(buttonVariables.$button-color-tertiary);
+  }
+
+  &--greyscale.button--text,
+  &--greyscale.button--text.button--outline {
+    @include buttonMixins.setButtonTextStyles(buttonVariables.$button-color-black);
+  }
+
+  &--primary.button--text.button--gradient {
+    @include buttonMixins.setButtonGradientTextStyles(buttonVariables.$button-gradient-primary-linear);
+  }
+
+  &--secondary.button--text.button--gradient {
+    @include buttonMixins.setButtonGradientTextStyles(buttonVariables.$button-gradient-secondary-linear);
+  }
+
+  &--tertiary.button--text.button--gradient {
+    @include buttonMixins.setButtonGradientTextStyles(buttonVariables.$button-gradient-tertiary-linear);
+  }
+
+  &--greyscale.button--text.button--gradient {
+    @include buttonMixins.setButtonGradientTextStyles(buttonVariables.$button-gradient-greyscale-linear);
+  }
+}

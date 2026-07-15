@@ -1,0 +1,99 @@
+/*
+  * This file contains the map of color families available in the library.
+  * Each family contains a default color and a set of shades that can
+  * be used to set gradient color stops. Use a tool like https://leonardocolor.io/#
+  * to generate the shades for each color family. The file does not need to be
+  * included at the global level, but should be included via @use './colors'
+  * in any .scss file that relies on the color map.
+  *
+  * When adding a new color family, make sure to add the default color.
+*/
+$color-families: (
+  black: (
+    default: #000000,
+  ),
+  white: (
+    default: #ffffff,
+    cream: #ffffe0,
+  ),
+  ac: (
+    black: #000000,
+    white: #ffffff,
+    grey: #abb8c3,
+    pink: #f78da7,
+    red: #cf2e2e,
+    orange: #ff6900,
+    yellow: #fcb900,
+    teal: #7bdcb5,
+    green: #00d084,
+    light-blue: #8ed1fc,
+    blue: #0693e3,
+    purple: #9b51e0,
+  ),
+  primary: (
+    default: hsl(202, 95%, 42%),
+    100: hsl(202, 80%, 83%),
+    200: hsl(202, 80%, 67%),
+    300: hsl(202, 80%, 50%),
+    400: hsl(202, 95%, 38%),
+    500: hsl(202, 95%, 29%),
+    600: hsl(202, 94%, 20%),
+  ),
+  primaryTransparent: (
+    default: hsl(209, 65%, 59%),
+    100: hsla(208, 65%, 85%, .5),
+    200: hsla(209, 65%, 72%, .2),
+    300: hsla(209, 65%, 59%, .45),
+    400: hsla(209, 46%, 47%, .85),
+    500: hsla(209, 45%, 36%, .9),
+    600: hsla(209, 45%, 24%, 1),
+  ),
+  secondary: (
+    default: hsl(0 , 64%, 50%),
+    100: hsl(0, 64%, 88%),
+    200: hsl(0, 63%, 78%),
+    300: hsl(0, 62%, 67%),
+    400: hsl(0, 62%, 54%),
+    500: hsl(0, 63%, 41%),
+    600: hsl(0, 64%, 28%),
+  ),
+  tertiary: (
+    default: hsl(137, 26%, 66%),
+    100: hsl(137, 26%, 81%),
+    200: hsl(137, 26%, 66%),
+    300: hsl(138, 16%, 54%),
+    400: hsl(138, 14%, 43%),
+    500: hsl(139, 13%, 33%),
+    600: hsl(140, 13%, 22%),
+  ),
+  greyscale: (
+    default: #4e4949,
+    100: #cecdcd,
+    200: #aba8a8,
+    300: #898585,
+    400: #6b6666,
+    500: #4e4949,
+    600: #312b2b,
+    700: #2a2424,
+    800: #231e1e,
+    900: #1c1717,
+    1000: #140e0e,
+    1100: #010101,
+    1200: #000000,
+  ),
+  greyscaleTransparent: (
+    default: rgba(78, 73, 73),
+    100: rgba(206, 205, 205, 0.3),
+    200: rgba(206, 205, 205, 0.3),
+    300: rgba(137, 133, 133, 0.3),
+    400: rgba(107, 102, 102, 0.4),
+    500: rgba(78, 73, 73, 0.5),
+    600: rgba(49, 43, 43, .5),
+    700: rgba(42, 36, 36, .8),
+    800: rgba(35, 30, 30, .9),
+    900: rgba(28, 23, 23, .9),
+    1000: rgba(20, 14, 14, .9),
+    1100: rgba(1, 1, 1, .9),
+    1200: rgba(0, 0, 0, 1),
+  )
+);

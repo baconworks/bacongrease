@@ -1,0 +1,26 @@
+{
+  "name": "@bacongrease/styles",
+  "version": "0.0.0",
+  "description": "Bacongrease SCSS design system — color-family maps, gradient functions, mixins, tokens, reset.",
+  "author": "Carter Bacon <carter@baconworks.dev>",
+  "license": "MIT",
+  "sideEffects": [
+    "**/index.scss",
+    "**/_base.scss",
+    "**/_utils.scss"
+  ],
+  "exports": {
+    ".": "./src/index.scss",
+    "./colors": "./src/_colors.scss",
+    "./functions": "./src/_functions.scss",
+    "./mixins": "./src/_mixins.scss",
+    "./variables": "./src/_variables.scss",
+    "./typography": "./src/_typography.scss",
+    "./base": "./src/_base.scss",
+    "./utils": "./src/_utils.scss",
+    "./*": "./src/*"
+  },
+  "files": [
+    "src"
+  ]
+}

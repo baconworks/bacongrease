@@ -1,0 +1,48 @@
+/*
+  * This file contains global utility classes. It should be included at the
+  * top level (e.g. app entry) via @use '@bacongrease/styles/utils' so that the
+  * classes are available throughout the app.
+*/
+@use './variables';
+@use './functions';
+
+// Inline text-link affordance for entity links within display bodies. Distinct
+// from the bare `a` reset so navigable fields read as clearly clickable.
+.text-link {
+  color: functions.getColor(ac, blue);
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration-thickness: 2px;
+    color: functions.getColor(ac, light-blue);
+  }
+}
+
+// set background to themed gradients
+.bg-gradient-greyscale {
+  background: variables.$gradient-greyscale-linear;
+}
+
+.bg-gradient-blue-to-purple {
+  background: variables.$gradient-anonymous-blue-to-purple;
+}
+
+.bg-gradient-teal-to-green {
+  background: variables.$gradient-anonymous-teal-to-green;
+}
+
+.bg-gradient-yellow-to-orange {
+  background: variables.$gradient-anonymous-yellow-to-orange;
+}
+
+.bg-gradient-orange-to-red {
+  background: variables.$gradient-anonymous-orange-to-red;
+}
+
+.bg-gradient-white-to-grey {
+  background: variables.$gradient-anonymous-white-to-grey;
+}

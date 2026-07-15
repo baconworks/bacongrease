@@ -1,0 +1,20 @@
+/*
+  * Public entry for @bacongrease/styles.
+  *
+  * Forwards the token/helper layer so consumers can pull the whole system with a
+  * single `@use '@bacongrease/styles' as bg;` and reach `bg.getColor(...)`,
+  * `bg.$breakpoint-md`, mixins, etc.
+  *
+  * NOTE: this entry also emits the reset (`base`) and utility classes. If you
+  * only want tokens/functions/mixins (no emitted CSS), `@use` the individual
+  * files instead: '@bacongrease/styles/functions', '.../mixins', '.../variables'.
+*/
+@forward './colors';
+@forward './functions';
+@forward './mixins';
+@forward './variables';
+@forward './typography';
+
+// side-effecting layers (emit CSS)
+@use './base';
+@use './utils';

@@ -1,0 +1,111 @@
+@use 'functions';
+@use 'variables';
+
+// HAMBURGER INTERFACE
+// colors
+$hamburger-bar-color: functions.getColor(white);
+$hamburger-bar-color-open: functions.getColor(white);
+$hamburger-background-color: functions.getColor(ac, grey);
+
+// sizing
+$hamburger-bar-height: 2px;
+$hamburger-bar-width: 100%;
+$hamburger-bar-gap: 3px;
+$hamburger-width: 2rem;
+$hamburger-height: 2rem;
+$hamburger-indicator-size: 200%;
+
+// stacking order
+$hamburger-z-index: 1001;
+
+// animations
+$hamburger-opacity-transition: .3s;
+
+
+.hamburger {
+  cursor: pointer;
+
+  &:hover > &_background,
+  &:focus > &_background {
+    background-color: $hamburger-background-color;
+  }
+
+  // border
+  border: none;
+
+  // color
+  background-color: transparent;
+
+  // positioning
+  position: relative;
+  display: grid;
+  grid-auto-rows: $hamburger-bar-height; // row count set dynamically in component style prop
+  gap: $hamburger-bar-gap;
+
+  // sizing
+  width: $hamburger-width;
+  height: $hamburger-height;
+
+  // spacing
+  padding: 0;
+
+  // stacking order: needs to be above navbar and mobile menu
+  z-index: $hamburger-z-index;
+
+  &--open {
+    padding: none;
+  }
+
+  // hover/focus indicator
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 35%;
+    width: $hamburger-indicator-size;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity $hamburger-opacity-transition ease-in-out
+  }
+
+  // indicator appears on hover and focus
+  &:hover::before,
+  &:focus-within::before {
+    background-color: functions.getColor(ac, grey);
+    opacity: 1;
+  }
+
+  // HAMBURGER BAR STYLES
+  &_bar {
+    height: $hamburger-bar-height;
+    width: $hamburger-bar-width;
+    background-color: $hamburger-bar-color;
+    transform: rotate(0) translate(0);
+    opacity: 1;
+    transition: all 0.0s ease-in-out;
+
+    &--open {
+      width: 100%;
+      height: 100%;
+      background-color: $hamburger-bar-color-open;
+    }
+
+    &--open:nth-child(1) {
+      transform: rotate(0) translateY(0) translateX(0);
+      scale: 100%;
+    }
+
+    &--open:nth-child(2) {
+      transform: rotate(0);
+      scale: 100%;
+      opacity: 1;
+    }
+
+    &--open:nth-child(3) {
+      transform: rotate(-0) translateY(-0) translateX(0);
+      scale: 100%;
+    }
+  }
+}

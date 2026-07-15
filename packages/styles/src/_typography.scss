@@ -1,0 +1,31 @@
+/**
+  * Font families are expected to be provided by the host application
+  * (e.g. linked in the document <head> from Adobe Typekit, Google Fonts, or
+  * self-hosted). The design system defaults to 'quiet-sans' (see _variables.scss
+  * $font-copy / $font-header); override those variables to retarget the type.
+  *
+  * Reference of the families used by the original app:
+  *
+  * SEGOE UI (Microsoft login button)
+  * Family: 'segoe-ui', sans-serif
+  * Weights: 400r, 400i, 600n, 600i, 700n, 700i
+  *
+  * ZEITUNG FAMILY
+  * Family: 'zeitung', sans-serif
+  * Weights: 400n, 400i, 700b, 700bi
+  *
+  * Family: 'zeitung-micro', sans-serif
+  * Weights: 300ni, 400ni, 700n, 900n
+  *
+  * RIVAL SANS
+  * Family: 'rival-sans', sans-serif;
+  * Weights: 400n, 400i, 500n, 500i, 700n, 700i
+  *
+  * Family: 'rival-sans-narrow', sans-serif;
+  * Weights: 400n, 400i, 700n, 700i
+  *
+  * QUIET SANS
+  * Family: 'quiet-sans', sans-serif;
+  * Weights: 200n, 200i, 300n, 300i, 400n, 400i, 600n, 600i, 700n, 700i, 800n, 800i
+  *
+*/

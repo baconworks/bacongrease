@@ -1,0 +1,71 @@
+@use 'functions';
+@use 'variables';
+
+// DROPDOWN INTERFACE
+// Note: MarginTop set in component via styleOptions prop
+
+// colors
+$dropdown-background-color: functions.getColor(ac, white);
+
+// shadows
+$dropdown-shadow: variables.$shadow-default;
+
+// spacing
+$dropdown-padding: 1rem;
+
+.dropdown {
+  position: absolute;
+  background-color: $dropdown-background-color;
+  box-shadow: $dropdown-shadow;
+  padding: $dropdown-padding;
+  white-space: nowrap;
+  width: max-content;
+  z-index: 3002;
+
+  &--closed {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  &--open {
+    visibility: visible;
+    pointer-events: all;
+  }
+
+  &_caret {
+    position: absolute;
+    transform: rotate(45deg);
+    background: white;
+    box-shadow: $dropdown-shadow;
+    height: 12px;
+    width: 12px;
+    top: -6px;
+    z-index: 1;
+
+    &--up {
+      top: auto;
+      transform: rotate(-135deg);
+      bottom: -6px;
+      z-index: 1;
+
+      &::before {
+        top: auto;
+        bottom: -3px;
+        transform: rotate(-135deg);
+        z-index: 2;
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      height: 24px;
+      width: 12px;
+      background: white;
+      z-index: 2;
+      transform: rotate(45deg);
+      top: -3px;
+      left: 5px;
+    }
+  }
+}

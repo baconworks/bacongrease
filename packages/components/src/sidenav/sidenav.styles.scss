@@ -1,0 +1,182 @@
+@use 'functions';
+@use 'variables';
+@use '../hamburger/hamburger.styles';
+
+// SIDENAV INTERFACE
+// colors
+$sidenav-background-color: functions.getColor(greyscale, 700);
+$sidenav-font-color: functions.getColor(white);
+$sidenav-link-active-color: functions.getColor(ac, light-blue);
+$sidenav-link-hover-color: functions.getColor(ac, grey);
+
+// spacing
+$sidenav-hamburger-vertical-spacing: 2rem;
+$sidenav-links-vertical-padding: 1rem;
+
+// sizing
+$sidenav-menu-height: auto;
+$sidenav-icon-size: 2.5rem;
+$sidenav-indicator-collapsed-size: 3.6rem;
+$sidenav-indicator-expanded-width: 90%;
+$sidenav-indicator-expanded-height: 90%;
+
+// animations
+$sidenav-opacity-transition: .2s;
+$sidenav-width-transition: .4s;
+
+.sidenav {
+  // position self
+  grid-row: 1 / -1;
+  position: relative;
+
+  // COLORS
+  background-color: $sidenav-background-color;
+  color: $sidenav-font-color;
+
+  // LAYOUT
+  display: grid;
+
+  // set the heights for sidenav items
+  grid-template-rows:
+  // hamburger cell is twice the height of the hamburger to account for
+  // the background size (200%) and then add the vertical spacing above
+  calc(
+    hamburger.$hamburger-height * 2 + $sidenav-hamburger-vertical-spacing
+  )
+  // action slot
+  min-content
+  // link menu
+  $sidenav-menu-height
+  // fill remaining space at bottom
+  1fr;
+
+  // STATE MANAGEMENT
+  .link_text {
+    transition:
+      width $sidenav-width-transition ease-in-out,
+      opacity $sidenav-width-transition ease-in-out;
+  }
+
+  &--collapsed .link_text {
+    width: 0;
+    opacity: 0;
+    transition-delay: 0s;
+  }
+
+  &--expanded .link_text {
+    z-index: 1;
+    width: variables.$sidenav-expanded - variables.$sidenav-collapsed;
+    opacity: 1;
+  }
+
+  &--collapsed &_nav-links-ul {
+    justify-content: center;
+  }
+
+  &--expanded &_nav-link {
+    width: 100%;
+    display: grid;
+    grid-template-columns: variables.$sidenav-collapsed 1fr;
+    z-index: 100;
+  }
+
+  &--collapsed &_action {
+    justify-self: center;
+  }
+
+  &--expanded &_action {
+    margin-left: 1rem;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+  }
+
+  // LINK AND INDICATOR CONFIGURATION
+  &_nav-link {
+    position: relative;
+    display: grid;
+    grid-template-columns: variables.$sidenav-collapsed 1fr;
+    align-items: center;
+    text-transform: capitalize;
+    width: 100%;
+    height: 100%;
+    padding-top: $sidenav-links-vertical-padding;
+    padding-bottom: $sidenav-links-vertical-padding;
+
+    // hover/focus/active indicator
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+
+      // indicator is a circle
+      width: $sidenav-indicator-collapsed-size;
+      height: $sidenav-indicator-collapsed-size;
+      border-radius: 50%;
+
+      // hide while not hover/focus/active
+      opacity: 0;
+
+      transform: translateY(-50%);
+      transition:
+        border-radius $sidenav-width-transition ease-in-out,
+        opacity $sidenav-opacity-transition ease-in-out,
+        width $sidenav-width-transition ease-in-out,
+        left $sidenav-width-transition ease-in-out;
+    }
+
+    // center the indicator behind the icon on collapse
+    .sidenav--collapsed &::before {
+      width: $sidenav-indicator-collapsed-size;
+      left: calc((variables.$sidenav-collapsed - $sidenav-indicator-collapsed-size) /2);
+      transform: translateY(-50%);
+    }
+
+    // indicator takes up full width on expansion
+    .sidenav--expanded &::before {
+      width: $sidenav-indicator-expanded-width;
+      border-radius: 0 2rem 2rem 0;
+      left: 0;
+      // centers indicator if height != 100%
+      transform: translateY(-50%);
+    }
+
+    // indicator appears on hover, focus and active state
+    &:hover::before,
+    &:focus-within::before {
+      background-color: $sidenav-link-hover-color;
+      opacity: 1;
+    }
+
+    &.link--active::before {
+      background-color: $sidenav-link-active-color;
+      opacity: 1;
+    }
+  }
+
+  &_nav-links-ul {
+    position: relative;
+    display: grid;
+    align-items: center;
+    width: 100%;
+  }
+
+  &_nav-links-li {
+    position: relative;
+    width: 100%;
+  }
+
+  // ICON SIZING / POSITIONING
+  &_link-icon {
+    justify-self: center;
+    width: $sidenav-icon-size;
+    height: $sidenav-icon-size;
+  }
+
+  // ensures hamburger doesn't shift when collapsed state changes
+  > .hamburger {
+    top: $sidenav-hamburger-vertical-spacing;
+    left: calc(variables.$sidenav-collapsed / 2);
+    transform: translateX(-50%);
+  }
+}

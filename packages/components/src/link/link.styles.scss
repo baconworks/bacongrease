@@ -1,0 +1,19 @@
+@use 'functions';
+
+// Minimal base layout so the link is usable standalone (the original relied on
+// its host layout for these). Icon sits before the text with a small gap.
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  color: currentColor;
+
+  &--active {
+    color: functions.getColor(ac, light-blue);
+  }
+
+  &_text {
+    white-space: nowrap;
+  }
+}

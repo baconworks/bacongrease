@@ -1,0 +1,55 @@
+/*
+  * This file contains a css-reset and library-wide base styles.
+  * It should be included at the top level of the consuming app (e.g. layout.tsx
+  * or the app entry stylesheet) via @use '@bacongrease/styles/base'.
+*/
+@use './variables';
+@use './functions';
+
+*,
+*::after,
+*::before {
+  // reset default spacing
+  margin: 0;
+  padding: 0;
+
+  // all elements inherit box-sizing from body
+  box-sizing: inherit;
+}
+
+html {
+  // set rem to 10px for easier sizing calculations
+  font-size: 62.5%;
+}
+
+body {
+  // include padding and border in element's width calculation
+  box-sizing: border-box;
+
+  height: 100vh;
+
+  // set scrolling behavior
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  // set default sitewide font
+  font-family: variables.$font-copy;
+  font-size: variables.$font-size-default;
+}
+
+ul {
+  // reset list styles
+  list-style: none;
+}
+
+a {
+  // reset link styles
+  text-decoration: none;
+  color: currentColor;
+}
+
+input {
+  border: none;
+  padding: 0;
+  margin: 0;
+}

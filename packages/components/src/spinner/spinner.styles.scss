@@ -1,0 +1,110 @@
+@use 'functions';
+
+.spinner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: functions.getColor(greyscale, 600);
+  background-color: white;
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+
+  &--grid {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
+
+  &--note {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    min-height: 12rem;
+    min-width: 12rem;
+  }
+
+  &--modal {
+    color: white;
+    background-color: transparent;
+    min-height: 12rem;
+    min-width: 12rem;
+  }
+
+  &_circle {
+    position: absolute;
+    border-radius: 50%;
+    height: 1rem;
+    aspect-ratio: 1 / 1;
+    animation: fade 1.5s linear infinite both;
+
+    @for $i from 0 through 11 {
+      &:nth-of-type(#{$i + 1}) {
+        $angle: $i * calc(360 / 12);
+        $angle-deg: $angle * 1deg;
+        $neg-angle-deg: -1 * $angle * 1deg;
+
+        transform: rotate($angle-deg) translate(5.5rem) rotate($neg-angle-deg);
+
+        animation-delay: $i * 0.125s;
+      }
+    }
+
+    &--black {
+      background-color: functions.getColor(ac, black);
+    }
+
+    &--grey {
+      background-color: functions.getColor(ac, grey);
+    }
+
+    &--pink {
+      background-color: functions.getColor(ac, pink);
+    }
+
+    &--red {
+      background-color: functions.getColor(ac, red);
+    }
+
+    &--orange {
+      background-color: functions.getColor(ac, orange);
+    }
+
+    &--yellow {
+      background-color: functions.getColor(ac, yellow);
+    }
+
+    &--teal {
+      background-color: functions.getColor(ac, teal);
+    }
+
+    &--green {
+      background-color: functions.getColor(ac, green);
+    }
+
+    &--light-blue {
+      background-color: functions.getColor(ac, light-blue);
+    }
+
+    &--blue {
+      background-color: functions.getColor(ac, blue);
+    }
+
+    &--purple {
+      background-color: functions.getColor(ac, purple);
+    }
+
+    &--white {
+      background-color: functions.getColor(ac, white);
+    }
+  }
+}
+
+@keyframes fade {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}

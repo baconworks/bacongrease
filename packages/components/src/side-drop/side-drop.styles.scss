@@ -1,0 +1,58 @@
+@use 'functions';
+@use 'variables';
+
+// SIDE-DROP INTERFACE
+// Note: MarginRight set in component via styleOptions prop
+
+// colors
+$side-drop-background-color: functions.getColor(ac, white);
+
+// shadows
+$side-drop-shadow: variables.$shadow-default;
+
+// spacing
+$side-drop-padding: 1rem;
+
+.side-drop {
+  position: absolute;
+  background-color: $side-drop-background-color;
+  box-shadow: $side-drop-shadow;
+  padding: $side-drop-padding;
+  white-space: nowrap;
+  width: max-content;
+  z-index: 1005;
+
+  &--closed {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  &--open {
+    visibility: visible;
+    pointer-events: all;
+  }
+
+  &_caret {
+    position: absolute;
+    transform: rotate(-45deg);
+    background: white;
+    box-shadow: $side-drop-shadow;
+    height: 12px;
+    width: 12px;
+    top: -6px;
+    left: -6px;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+      height: 24px;
+      width: 12px;
+      background: white;
+      z-index: 2;
+      transform: rotate(45deg);
+      top: -3px;
+      left: 5px;
+    }
+  }
+}

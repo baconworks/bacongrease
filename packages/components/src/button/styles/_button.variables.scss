@@ -1,0 +1,48 @@
+@use 'variables' as globalVariables;
+@use 'functions' as globalFunctions;
+
+// BUTTON INTERFACE
+// animation
+$button-transition-timing: globalVariables.$transition-timing-default;
+$button-transition-function: globalVariables.$transition-function-default;
+
+// border
+$button-border: none;
+$button-border-width: 2px;
+$button-border-radius: 1rem;
+
+// colors
+$button-color-black: globalFunctions.getColor(greyscale, 1200);
+$button-text-color: globalFunctions.getColor(white, default);
+$button-color-primary: globalFunctions.getColor(primary, 400);
+$button-color-secondary: globalFunctions.getColor(secondary, 400);
+$button-color-tertiary: globalFunctions.getColor(tertiary, 400);
+
+// Microsoft login button colors / fonts
+$button-color-microsoft-bg-dark: #2F2F2F;
+$button-color-microsoft-text-light: #FFFFFF;
+$button-color-microsoft-bg-light: #FFFFFF;
+$button-color-microsoft-text-dark: #5E5E5E;
+$button-color-microsoft-outline-light: #8C8C8C;
+$button-font-family-microsoft: 'Segoe UI', sans-serif;
+$button-font-weight-microsoft: 600;
+
+// gradients
+$button-gradient-primary-linear: globalVariables.$gradient-primary-linear;
+$button-gradient-secondary-linear: globalVariables.$gradient-secondary-linear;
+$button-gradient-tertiary-linear: globalVariables.$gradient-tertiary-linear;
+$button-gradient-greyscale-linear: globalVariables.$gradient-greyscale-linear;
+
+// shadows
+$button-shadow: globalVariables.$shadow-default;
+$button-shadow-text:  0.0px 0.0px 1px hsla(0, 0%, 0%, 0.05),
+                      0.3px 0.4px 1px hsla(0, 0%, 0%, 0.02),
+                      0.9px 1.5px 1px hsla(0, 0%, 0%, 0.045);
+
+// sizing
+$button-min-width: 4.4rem; // iOS app requirement
+$button-pill-radius: 100rem;
+
+// spacing
+$button-gap: 1rem;
+$button-padding: 1rem;

@@ -1,0 +1,70 @@
+/*
+  * This file contains global mixins. It does not need
+  * to be included at the global level, but should be included via
+  * @use './mixins' in any .scss file that relies on these mixins.
+*/
+@use 'sass:color';
+@use './variables';
+@use './functions';
+
+@mixin setColors($color, $backgroundColor) {
+  color: $color;
+  background-color: $backgroundColor;
+}
+
+/**
+  * Quickly generate custom color classes. Defaults to 6 classes, following
+  * protocol of 6 color tints per color family (except grey, which is 12)
+  * @example
+  * generateColorClasses('stop-color', 'stop-color', 'primary')
+  * result: '.stop-color-primary-100 { stop-color: [ primary color 100 ]; }'
+*/
+@mixin generateColorClasses($className, $property, $colorFamily, $classCount: 6 ) {
+  @for $i from 1 through $classCount {
+    .#{ $className }-#{ $colorFamily }-#{ $i * 100 } {
+      #{ $property }: functions.getColor($colorFamily, ($i * 100));
+    }
+  }
+}
+
+// HOVER
+@mixin hoverScaleColorLightness(
+  $color,
+  $backgroundColor,
+  $transitionTiming: variables.$transition-timing-default,
+  $transitionFunction: variables.$transition-function-default,
+  $lightnessPercent: variables.$color-scale-lightness-md
+) {
+  transition: color $transitionTiming $transitionFunction,
+              background-color $transitionTiming $transitionFunction;
+
+  &:hover:not(:disabled) {
+    color: color.scale(
+      $color: $color, $lightness: $lightnessPercent
+    );
+    background-color: color.scale(
+      $color: $backgroundColor, $lightness: $lightnessPercent
+    );
+  }
+}
+
+@mixin hoverAnimateLinearGradient(
+  $backgroundWidth: 200%,
+  $backgroundPositionX: 100%,
+  $transitionTiming: variables.$transition-timing-default,
+  $transitionFunction: variables.$transition-function-default
+) {
+  background-size: $backgroundWidth 100%;
+  background-position: $backgroundPositionX 0;
+  transition: background-position $transitionTiming $transitionFunction;
+
+  &:hover:not(:disabled) {
+    background-position: 0 0;
+  }
+}
+
+// SHAPES
+@mixin circle {
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+}

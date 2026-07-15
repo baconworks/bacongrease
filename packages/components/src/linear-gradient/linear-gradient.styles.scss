@@ -1,0 +1,19 @@
+@use 'mixins' as globalMixins;
+@use 'variables' as globalVariables;
+
+.linear-gradient {
+  /**
+    * All the color classes in this file map to the global color variant families
+    * defined in the global colors $color-families map. There should be a class for every
+    * color variation to enable consistent display of gradients between SVG gradients
+    * and css linear-gradients.
+    */
+  @include globalMixins.generateColorClasses('stop-color', stop-color, primary);
+  @include globalMixins.generateColorClasses('stop-color', stop-color, secondary);
+  @include globalMixins.generateColorClasses('stop-color', stop-color, tertiary);
+  @include globalMixins.generateColorClasses('stop-color', stop-color, greyscale, 1200);
+
+  stop {
+    transition: stop-color globalVariables.$transition-timing-default globalVariables.$transition-function-default;
+  }
+}

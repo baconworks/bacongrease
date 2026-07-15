@@ -1,0 +1,27 @@
+{
+  "name": "@bacongrease/components",
+  "version": "0.0.0",
+  "description": "Bacongrease React component primitives — button, icon, modal, dropdown, and friends.",
+  "author": "Carter Bacon <carter@baconworks.dev>",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.scss"
+  ],
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "react-icons": ">=5"
+  },
+  "devDependencies": {
+    "@bacongrease/styles": "workspace:*"
+  }
+}

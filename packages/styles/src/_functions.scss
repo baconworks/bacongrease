@@ -1,0 +1,73 @@
+/*
+  * This file contains helper functions. It does not need
+  * to be included at the global level, but should be included via
+  * @use './functions' in any .scss file that relies on these functions.
+*/
+@use "sass:map";
+@use "sass:list";
+@use "sass:math";
+@use "./colors";
+
+// convert degrees to radians
+@function degreesToRadians($degrees) {
+  $radians: $degrees * (math.$pi / 180);
+  @return $radians;
+}
+
+// get coordinates on unit circle from radians
+@function xyFromRadians($radians) {
+  $x: math.cos($radians);
+  $y: math.sin($radians);
+
+  @return ($x, $y);
+}
+
+// color from $color-families map
+@function getColor($colorFamily, $value: 'default') {
+  @return map.get(colors.$color-families, $colorFamily, $value);
+}
+
+// create gradient from color family and range
+/**
+  * @param $direction   Either the angle: number or direction: string of the
+  *                     gradient (i.e. 305 or 'to right')
+  * @param $colorFamily Color family from $color-families map (i.e. primary, secondary)
+  * @param $startColor  The starting color value for the gradient as a factor of 100.
+  * @param $endColor    The starting color value for the gradient as a factor of 100.
+  * @param $offsets     Either a single percent or length value or array and array
+  *                     of two values (i.e. 0% / 0 or (0%, 50%))
+*/
+@function createGradientFromColorMap(
+  $direction,
+  $colorFamily,
+  $startColor: 100,
+  $endColor: 600,
+  $offsets: null
+) {
+  // initialize gradient array
+  $gradient: ();
+  $gradient: list.append($gradient, $direction, space);
+
+  // determine how many color stops
+  $numStops: calc(($endColor - $startColor) / 100);
+
+  // iterate through the number of stops and generate colors
+  // and offsets for each stop, adding them to the gradient string
+  @for $i from 0 through $numStops {
+    // get current color from color map
+    $color: getColor($colorFamily, $endColor + ($i * -100));
+    $currentStop: ($color);
+
+    // if offsets are provided convert them to string
+    @if ($offsets != null) {
+      $currentStop: list.append(
+        $currentStop, list.nth($offsets, ($i + 1)), space
+      );
+    }
+
+    // add currentStop to gradient string
+    $gradient: list.append($gradient, $currentStop, comma)
+  }
+
+  @return linear-gradient($gradient);
+}

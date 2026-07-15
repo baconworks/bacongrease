@@ -1,0 +1,167 @@
+@use 'sass:color';
+@use './button.variables' as buttonVariables;
+@use 'variables' as globalVariables;
+@use 'mixins' as globalMixins;
+
+// BUTTON HELPERS
+/**
+  * Sets the default text and background colors for the base button variant.
+  * The button increases it's lightness on hover.
+*/
+@mixin setButtonVariant(
+  $fontFamily: inherit,
+  $fontWeight: inherit,
+  $color: buttonVariables.$button-text-color,
+  $backgroundColor
+) {
+  @include globalMixins.setColors($color, $backgroundColor);
+  @include globalMixins.hoverScaleColorLightness(
+    $color,
+    $backgroundColor,
+    $transitionTiming: buttonVariables.$button-transition-timing,
+    $transitionFunction: buttonVariables.$button-transition-function
+  );
+  font-family: $fontFamily;
+  font-weight: $fontWeight;
+}
+
+/**
+  * Creates a button with a gradient background that animates left to right on hover.
+*/
+@mixin setButtonGradientStyles(
+  $gradient,
+  $transitionTiming: buttonVariables.$button-transition-timing,
+  $transitionFunction: buttonVariables.$button-transition-function
+) {
+  background: $gradient;
+
+  @include globalMixins.hoverAnimateLinearGradient(
+    $transitionTiming: $transitionTiming,
+    $transitionFunction: $transitionFunction
+  );
+}
+
+/**
+  * Creates an outline/ghost button with matched text and border color.
+  * The text and border color increases in lightness on hover.
+*/
+@mixin setButtonOutlineStyles(
+  $color,
+  $borderWidth: buttonVariables.$button-border-width,
+  $borderStyle: solid,
+  $transitionTiming: buttonVariables.$button-transition-timing,
+  $transitionFunction: buttonVariables.$button-transition-function
+) {
+  background: none;
+  border: $borderWidth $borderStyle $color;
+  color: $color;
+  transition: color $transitionTiming $transitionFunction,
+              border $transitionTiming $transitionFunction;
+
+  &:hover:not(:disabled) {
+    background: none;
+    color:  color.scale(
+              $color: $color,
+              $lightness: globalVariables.$color-scale-lightness-md
+            );
+    border: $borderWidth
+            $borderStyle
+            color.scale(
+              $color: $color,
+              $lightness: globalVariables.$color-scale-lightness-md
+            );
+  }
+}
+
+/**
+  * Creates a text-only button that increases it's lightness on hover.
+*/
+@mixin setButtonTextStyles($color) {
+  color: $color;
+  background: none;
+  border: none;
+
+  &:hover:not(:disabled) {
+    background: none;
+    border: none;
+  }
+
+  @include globalMixins.hoverScaleColorLightness($color, $backgroundColor: transparent);
+}
+
+/**
+  * Creates a text-only button with gradient text that animates
+  * left to right on hover.
+*/
+@mixin setButtonGradientTextStyles(
+  $gradient,
+  $transitionTiming: buttonVariables.$button-transition-timing,
+  $transitionFunction: buttonVariables.$button-transition-function
+) {
+  // creates the text gradient
+  background: $gradient text;
+  color: transparent;
+
+  // needs to folow background so background properties flow correctly
+  @include globalMixins.hoverAnimateLinearGradient(
+    $transitionTiming: $transitionTiming,
+    $transitionFunction: $transitionFunction
+  );
+
+  &:hover:not(:disabled) {
+    // need to respecify these properties so they don't get overwritten by other mixins
+    background: $gradient text;
+    background-size: 200% 100%;
+    color: transparent;
+  }
+}
+
+/**
+  * Creates a ghost/outline button with gradient text and outline.
+  * Gradients animate left to right on hover.
+*/
+@mixin setButtonOutlineGradientStyles(
+  $gradient,
+  $borderWidth: buttonVariables.$button-border-width,
+  $transitionTiming: buttonVariables.$button-transition-timing,
+  $transitionFunction: buttonVariables.$button-transition-function
+) {
+  // sets color and border to transparent, allowing background gradient to show through
+  @include setButtonOutlineStyles($color: transparent);
+
+  // creates the animated gradient text
+  @include setButtonGradientTextStyles($gradient, $transitionTiming, $transitionFunction);
+
+  // creates the background gradient for the border
+  &::before {
+    content: "";
+
+    // stacking order and positioning
+    z-index: -1;
+    position: absolute;
+    inset: calc($borderWidth * -1);
+
+    // inherit transparent border from parent
+    border: inherit;
+    border-radius: inherit;
+
+    // sets up background gradient for border
+    background: $gradient;
+    background-origin: border-box;
+    background-position: 100% 0;
+    background-size: 200% 100%;
+
+    // animates background border gradient
+    transition: background-position $transitionTiming $transitionFunction;
+
+    // creates background transparency
+    mask: linear-gradient(black, black),
+          linear-gradient(black, black);
+    mask-clip: content-box, border-box;
+    mask-composite: exclude;
+  }
+
+  &:hover:not(:disabled)::before {
+    background-position: 0 0;
+  }
+}
