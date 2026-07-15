@@ -9,6 +9,8 @@ const meta = {
   title: 'Primitives/Modal',
   component: Modal,
   parameters: { layout: 'fullscreen' },
+  // placeholder arg satisfies the required prop; the story drives state via render
+  args: { open: false },
 } satisfies Meta<typeof Modal>;
 
 export default meta;

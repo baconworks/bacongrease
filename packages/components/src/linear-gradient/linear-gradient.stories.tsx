@@ -6,6 +6,8 @@ const meta = {
   title: 'Primitives/LinearGradient',
   component: LinearGradient,
   parameters: { layout: 'centered' },
+  // placeholder arg satisfies the required prop; stories render full SVG wrappers
+  args: { gradientStops: [] },
 } satisfies Meta<typeof LinearGradient>;
 
 export default meta;
