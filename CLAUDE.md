@@ -117,33 +117,71 @@ icon gradient is a pre-existing no-op. Left as-is intentionally.
   `render`. Dropdown/SideDrop triggers wrap the Button in a `<span ref=…>`
   because Button doesn't forward a ref.
 
+## Build pipeline (how packages are built for publishing)
+
+Run `pnpm build` at the root — it builds `styles` then `components`.
+
+- **`@bacongrease/components`** builds with **Vite lib mode**
+  (`packages/components/vite.config.ts`). It emits to `dist/`: `index.js` (ESM),
+  `index.cjs` (CJS), `index.d.ts` + a per-component `.d.ts` tree (via
+  `vite-plugin-dts`), and `style.css` (all component SCSS compiled — gradient
+  generation intact). The config **reproduces Storybook's scss `loadPaths`**
+  (`../styles/src`) so the bare `@use 'mixins'`/`'functions'`/`'variables'`
+  specifiers resolve at build time — this is how we closed the open resolution
+  question. react/react-dom/react-icons are externalized (peer deps);
+  react-icons is type-only in the source so it's elided from runtime JS and kept
+  in the `.d.ts`.
+- **No `@vitejs/plugin-react`** in the lib build — deliberate. A lib build needs
+  no fast-refresh, esbuild transpiles TSX via tsconfig's `"jsx": "react-jsx"`
+  (automatic runtime), and dropping it avoids a Vite-version peer conflict
+  (`plugin-react@6` wants Vite 8; we're on Vite 6). Storybook still uses its own
+  internal react plugin, unaffected.
+- **`@bacongrease/styles`** ships SCSS **source** (its scoped exports
+  `@bacongrease/styles/mixins` etc. already existed) **plus** a compiled
+  `dist/index.css` (via the `sass` CLI, `build` script) exported at
+  `./style.css` for plain-CSS consumers.
+- Build tooling (vite, vite-plugin-dts, sass) lives at the **workspace root**
+  devDeps and resolves via pnpm's PATH — same pattern as the Storybook deps.
+- `dist/` is gitignored; it's a build artifact, not committed.
+
+**Consumer contract:**
+```js
+import { Button } from '@bacongrease/components'
+import '@bacongrease/components/style.css'   // component styles
+// SCSS authors can also: @use '@bacongrease/styles/mixins' as *;
+```
+
+Note: because component SCSS is compiled to CSS at **our** build time, consumers
+never resolve the bare `@use` specifiers — that concern only applies to authors
+consuming the **styles** package's SCSS, which the scoped exports handle.
+
 ## Current status & where to pick up
 
 Everything below the line is **done and verified** (typecheck + Storybook build
 both green, committed on `main`):
 
-- ✅ Monorepo scaffold, pnpm workspace, git initialized (2 commits)
+- ✅ Monorepo scaffold, pnpm workspace, git initialized
 - ✅ `@bacongrease/styles` — full system ported + modernized
 - ✅ `@bacongrease/components` — 10 primitives ported + decoupled + barrel
 - ✅ Storybook wired, a story per component
+- ✅ **Build + publish pipeline** — both packages build to `dist/` and `npm
+  pack` cleanly (see "Build pipeline" section below). `pnpm build` at the root
+  runs both. Verified: typecheck + build-storybook + pack dry-run all green.
 
 **Not done yet — likely next steps, roughly in priority order:**
 
-1. **Build + publish pipeline.** Right now packages are consumed from source via
-   the workspace only; you can't `pnpm add @bacongrease/*` elsewhere. Needs a
-   bundler (tsup or Vite lib mode) that emits JS + `.d.ts` and ships/compiles the
-   SCSS, and a story for how consumers resolve the bare `@use` specifiers
-   (either document loadPaths, or switch component SCSS to
-   `@use '@bacongrease/styles/mixins'` scoped specifiers, or a Sass `pkg:`
-   importer). Then dogfood by consuming it back into ac-booking.
+1. **Dogfood into ac-booking.** The build works and `pnpm pack` produces valid
+   tarballs, but we have NOT yet consumed the built packages back into a real
+   app. That's the true end-to-end test — do it next (either `pnpm add` the
+   packed tarballs, or a `file:`/`link:` dep, into `../ac-booking`).
 2. **CSS custom-property token layer.** Expose the palette/key tokens as CSS
    variables so consumers theme at runtime without recompiling Sass. This is the
    recommended upgrade that makes it a real library vs. "my styles."
 3. **Port tests.** The source app has Vitest + Testing Library tests for these
    components (`*.component.test.tsx`); they weren't brought over.
-4. **Git remote / publish target.** `gh` CLI is NOT installed locally, so nothing
-   is pushed. To wire it: `brew install gh` then create+push, or the user creates
-   an empty GitHub repo and we add the remote.
+4. **Publish for real.** Packages are still `version: 0.0.0` and unpublished.
+   Bump versions and `npm publish` (or set up a release flow) when ready. A repo
+   now exists on GitHub under the `baconworks` org (pushed this session).
 5. **Rename the `ac` color family** to something brand-neutral (it's the old app
    brand name; spinner/hamburger/utils reference `getColor(ac, …)`).
 

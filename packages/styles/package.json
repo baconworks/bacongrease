@@ -18,9 +18,14 @@
     "./typography": "./src/_typography.scss",
     "./base": "./src/_base.scss",
     "./utils": "./src/_utils.scss",
+    "./style.css": "./dist/index.css",
     "./*": "./src/*"
   },
+  "scripts": {
+    "build": "sass src/index.scss dist/index.css --style=compressed --no-source-map"
+  },
   "files": [
-    "src"
+    "src",
+    "dist"
   ]
 }
