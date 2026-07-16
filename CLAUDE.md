@@ -10,7 +10,7 @@ Next.js app (sibling repo at `../ac-booking/ac-booking-ui-v1`) by pulling out th
 generic, reusable pieces and **decoupling them from the app** so they can be
 imported into other projects.
 
-It is a **pnpm monorepo**. Storybook (React + Vite) at the repo root is the
+It is a **Yarn 4 monorepo** (node-modules linker). Storybook (React + Vite) at the repo root is the
 development, documentation, and dogfooding environment.
 
 ## Layout
@@ -29,7 +29,7 @@ bacongrease/
 │                                                spinner hamburger modal dropdown
 │                                                side-drop link sidenav
 ├── .storybook/       main.ts preview.ts preview-head.html
-├── pnpm-workspace.yaml  tsconfig.base.json  tsconfig.json
+├── .yarnrc.yml  .nvmrc  tsconfig.base.json  tsconfig.json
 └── README.md         (human-facing; this file is agent-facing)
 ```
 
@@ -39,14 +39,21 @@ original had them (button and linear-gradient are the elaborate ones).
 
 ## Commands
 
+Toolchain: **Node ≥ 20.19** (`.nvmrc` pins 20.20.0) and **Yarn 4** (Corepack; the
+root `packageManager` field pins the version). Node 20.19 is a hard floor — the
+`sass` CLI `require()`s an ESM-only `chokidar`, which older Node can't load (see
+ADR [`0001`](./docs/adr/0001-yarn4-node20-toolchain.md)).
+
 ```bash
-pnpm install
-pnpm storybook          # dev explorer → http://localhost:6006
-pnpm build-storybook    # static build — the main "does it all compile" check
-pnpm typecheck          # tsc --noEmit across the workspace
+nvm use                 # Node 20.20.0 per .nvmrc
+yarn install
+yarn storybook          # dev explorer → http://localhost:6006
+yarn build-storybook    # static build — the main "does it all compile" check
+yarn typecheck          # tsc --noEmit across the workspace
+yarn build              # build both packages to dist/
 ```
 
-**Verify changes with BOTH `pnpm typecheck` AND `pnpm build-storybook`.** They
+**Verify changes with BOTH `yarn typecheck` AND `yarn build-storybook`.** They
 catch different things: the Vite/esbuild build transpiles without type-checking
 (so it misses type errors), while `tsc` doesn't exercise SCSS resolution or JSX
 bundling. Both currently pass. The `"use client"` warnings during the build are
@@ -78,8 +85,8 @@ app-specific. The detail for the docs vault lives in [`docs/README.md`](./docs/R
   the ask and the right thing differ, do the right thing or say so.
 - State uncertainty and give options — don't guess fluently. Never fabricate
   specifics (APIs, config keys, versions); verify or ask.
-- Verify before claiming done — exercise the change (here: `pnpm typecheck` +
-  `pnpm build-storybook`, and run the affected flow), don't just typecheck.
+- Verify before claiming done — exercise the change (here: `yarn typecheck` +
+  `yarn build-storybook`, and run the affected flow), don't just typecheck.
   Report failures with output.
 - Cut scope when in doubt; flag drift.
 
@@ -161,7 +168,8 @@ icon gradient is a pre-existing no-op. Left as-is intentionally.
 
 ## Build pipeline (how packages are built for publishing)
 
-Run `pnpm build` at the root — it builds `styles` then `components`.
+Run `yarn build` at the root — it builds `styles` then `components` (via
+`yarn workspace <name> build`).
 
 - **`@bacongrease/components`** builds with **Vite lib mode**
   (`packages/components/vite.config.ts`). It emits to `dist/`: `index.js` (ESM),
@@ -183,7 +191,8 @@ Run `pnpm build` at the root — it builds `styles` then `components`.
   `dist/index.css` (via the `sass` CLI, `build` script) exported at
   `./style.css` for plain-CSS consumers.
 - Build tooling (vite, vite-plugin-dts, sass) lives at the **workspace root**
-  devDeps and resolves via pnpm's PATH — same pattern as the Storybook deps.
+  devDeps and resolves via the hoisted `node_modules/.bin` — same pattern as the
+  Storybook deps.
 - `dist/` is gitignored; it's a build artifact, not committed.
 
 **Consumer contract:**
@@ -202,23 +211,27 @@ consuming the **styles** package's SCSS, which the scoped exports handle.
 Everything below the line is **done and verified** (typecheck + Storybook build
 both green, committed on `main`):
 
-- ✅ Monorepo scaffold, pnpm workspace, git initialized
+- ✅ Monorepo scaffold, Yarn 4 workspace, git initialized
 - ✅ `@bacongrease/styles` — full system ported + modernized
 - ✅ `@bacongrease/components` — 10 primitives ported + decoupled + barrel
 - ✅ Storybook wired, a story per component
-- ✅ **Build + publish pipeline** — both packages build to `dist/` and `npm
-  pack` cleanly (see "Build pipeline" section below). `pnpm build` at the root
+- ✅ **Build + publish pipeline** — both packages build to `dist/` and `yarn
+  pack` cleanly (see "Build pipeline" section below). `yarn build` at the root
   runs both. Verified: typecheck + build-storybook + pack dry-run all green.
 - ✅ **Working conventions + `docs/` vault** — standing process preferences
   documented above; `docs/` holds decisions/standards/scope with an ADR log
-  (`docs/adr/`, none written yet) and the NOT-DOING list (`docs/scope.md`).
+  (`docs/adr/`) and the NOT-DOING list (`docs/scope.md`).
+- ✅ **Yarn 4 + Node 20 toolchain** — migrated off pnpm to Yarn 4 (node-modules
+  linker) and set a Node ≥ 20.19 floor. Recorded in ADR
+  [`0001`](./docs/adr/0001-yarn4-node20-toolchain.md). Verified: install +
+  typecheck + build + build-storybook + pack dry-runs all green.
 
 **Not done yet — likely next steps, roughly in priority order:**
 
-1. **Dogfood into ac-booking.** The build works and `pnpm pack` produces valid
+1. **Dogfood into ac-booking.** The build works and `yarn pack` produces valid
    tarballs, but we have NOT yet consumed the built packages back into a real
-   app. That's the true end-to-end test — do it next (either `pnpm add` the
-   packed tarballs, or a `file:`/`link:` dep, into `../ac-booking`).
+   app. That's the true end-to-end test — do it next (either `yarn add` the
+   packed tarballs, or a `link:`/`portal:` dep, into `../ac-booking`).
 2. **CSS custom-property token layer.** Expose the palette/key tokens as CSS
    variables so consumers theme at runtime without recompiling Sass. This is the
    recommended upgrade that makes it a real library vs. "my styles."

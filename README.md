@@ -12,11 +12,17 @@ Pulled out of the `ac-booking` app and decoupled from it. Two packages:
 
 ## Getting started
 
+Requires **Node ≥ 20.19** (see `.nvmrc`) and **Yarn 4** (via Corepack — the
+`packageManager` field pins the version).
+
 ```bash
-pnpm install
-pnpm storybook      # dev — component explorer at http://localhost:6006
-pnpm build-storybook
-pnpm typecheck
+nvm use             # Node 20.20.0 per .nvmrc
+corepack enable     # once per machine, if yarn isn't already available
+yarn install
+yarn storybook      # dev — component explorer at http://localhost:6006
+yarn build-storybook
+yarn typecheck
+yarn build          # build both packages to dist/
 ```
 
 Storybook (React + Vite) is the development and documentation environment.

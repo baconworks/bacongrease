@@ -6,10 +6,17 @@
   "author": "Carter Bacon <carter@baconworks.dev>",
   "license": "MIT",
   "type": "module",
+  "packageManager": "yarn@4.5.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build": "pnpm --filter @bacongrease/styles build && pnpm --filter @bacongrease/components build",
+    "build": "yarn workspace @bacongrease/styles build && yarn workspace @bacongrease/components build",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
