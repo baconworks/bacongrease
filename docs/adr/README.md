@@ -60,5 +60,8 @@ tags: [decision]
 
 ## Index
 
-_No ADRs yet — the first architectural decision recorded under this practice
-becomes `0001`._
+- [`0001`](./0001-yarn4-node20-toolchain.md) — In the context of aligning the
+  repo with Carter's default tooling and fixing a Node-19 ESM build failure, we
+  chose **Yarn 4 (node-modules linker) + a Node ≥ 20.19 floor**, to get a
+  consistent, supported toolchain, accepting a documented fresh-machine
+  prerequisite and a hard Node-version lower bound.

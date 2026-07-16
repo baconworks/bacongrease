@@ -6,3 +6,12 @@ storybook-static/
 *.tsbuildinfo
 .vite/
 docs/.obsidian/
+
+# yarn 4 (node-modules linker; releases fetched via corepack, not committed)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
