@@ -34,6 +34,9 @@ const Button = ({
   icon: ButtonIcon,
   image,
   label,
+  onMouseEnter,
+  onMouseLeave,
+  ref,
   styleOptions = [],
   variant = ButtonVariants.primary,
   ...buttonProps
@@ -69,16 +72,19 @@ const Button = ({
     }
   );
 
-  // handlers animate the icon gradient stops on hover
-  // to match the button hover effect
-  const handleMouseEnter: MouseEventHandler = () => {
+  // handlers animate the icon gradient stops on hover to match the button hover effect.
+  // They call the consumer's handler first, so passthrough onMouseEnter/onMouseLeave are
+  // merged, never dropped.
+  const handleMouseEnter: MouseEventHandler<HTMLButtonElement> = ( event ) => {
+    onMouseEnter?.( event );
     if (!iconGradient) return;
     setGradientStops(
       buttonIconGradientVariants[variant + 'Hover']
     );
   };
 
-  const handleMouseLeave: MouseEventHandler = () => {
+  const handleMouseLeave: MouseEventHandler<HTMLButtonElement> = ( event ) => {
+    onMouseLeave?.( event );
     if (!iconGradient) return;
     setGradientStops(
       buttonIconGradientVariants[variant]
@@ -88,6 +94,7 @@ const Button = ({
   return (
     <button
       { ...buttonProps }
+      ref={ ref }
       className={ classes }
       disabled={ disabled }
       aria-disabled={ disabled }
@@ -108,10 +115,11 @@ const Button = ({
           />
       }
       { (image && !ButtonIcon) &&
+          // Decorative: the button's accessible name comes from `label` (or a
+          // consumer-passed `aria-label`), so the image must not be re-announced.
           <img
-            aria-label="button icon"
             src={ image }
-            alt="button icon"
+            alt=""
             className="button_image"
             width={ 100 }
             height={ 100 }

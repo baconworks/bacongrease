@@ -35,6 +35,17 @@ boundaries; pure utils (`cleanClasses`) stay server-safe. This unblocks importin
 **`sales-platform/web`** app consumes it (linked locally via Yarn `portal:`; rebuild here → `web`
 picks up `dist/`).
 
+**Also recent (Button correctness + a11y):** surfaced while first consuming `Button` in `web/`.
+Decorative `image` now `alt=""` (was double-announced); `ButtonProps` now `extends
+ComponentPropsWithRef` and the component **forwards `ref`** (React 19 — no `forwardRef`), so it can
+be focused or given a ref; a handler the caller passes (`onMouseEnter`/`onMouseLeave`) now **also
+runs** instead of being silently overwritten.
+Two conventions were codified in `CLAUDE.md` from this (owner preferences): **accessibility is a
+requirement (WCAG 2.1 AA)** for every component, and **a component built around one HTML element
+extends `ComponentPropsWithRef<'el'>`** (forward the `ref`; also run the caller's event handlers;
+components made of several elements give each part its own named props instead). No ADR —
+component correctness, not an architectural decision.
+
 ## What's next
 
 - **Component audit on intake.** The components predate this workflow. When one is *brought into*
