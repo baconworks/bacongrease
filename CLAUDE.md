@@ -56,8 +56,15 @@ yarn build              # build both packages to dist/
 **Verify changes with BOTH `yarn typecheck` AND `yarn build-storybook`.** They
 catch different things: the Vite/esbuild build transpiles without type-checking
 (so it misses type errors), while `tsc` doesn't exercise SCSS resolution or JSX
-bundling. Both currently pass. The `"use client"` warnings during the build are
-**expected and harmless** — those are Next.js directives that Vite ignores.
+bundling. Both currently pass.
+
+**`'use client'` directives are PRESERVED per-module in the build (ADR-0002).** The
+components package builds with `preserveModules` + `rollup-preserve-directives`, so
+each interactive component keeps its own `'use client'` (a client boundary) while
+pure utilities (`cleanClasses`) stay directive-free and server-safe. This is what
+lets `@bacongrease/components` be imported into Next.js (App Router) Server
+Components. Do not add a blanket `'use client'` banner — it would drag the pure
+utils behind a client boundary.
 
 ## Conventions (match these)
 
@@ -114,6 +121,24 @@ things go under "Not built yet."
 Not-done / open-questions in the same change that moves them. A hard rule may get
 a cheap mechanical guard (gitignore line, hook), but the guard isn't the policy —
 this file is.
+
+## Definition of done — verify before every PR
+
+A change isn't done until the repo is honest about it. Before opening a PR:
+
+- **ADR** — a forced/architecturally-significant decision ships its ADR in the same PR
+  (`docs/adr/NNNN-slug.md`, Nygard body; see [`docs/adr/README.md`](./docs/adr/README.md)). Don't
+  batch or backfill.
+- **Docs current** — update the **README** (what it is / setup, if a capability or setup step changed),
+  **[`docs/handoff.md`](./docs/handoff.md)** (the "where we are / what's next" snapshot), **this CLAUDE.md**
+  (conventions, commands, decisions), and the docs vault (scope/adr). Don't leave a note stale
+  (e.g. a build change that invalidates a CLAUDE.md statement — fix it in the same PR).
+- **Green** — `yarn typecheck` AND `yarn build-storybook` pass (and `yarn build` if the dist output
+  changed).
+- **Cross-repo (bacongrease ↔ sales-platform `web/`)** — bacongrease is dogfooded by `web/`, so a
+  change driven by or affecting `web/` means **both repos' DoD apply**: an ADR + doc updates in EACH
+  affected repo, separate branches/PRs. Operate as if you're in both repos at once — don't fix
+  bacongrease and leave `web/`'s notes (or vice versa) stale.
 
 ## How SCSS resolution works (important)
 
