@@ -65,3 +65,10 @@ tags: [decision]
   chose **Yarn 4 (node-modules linker) + a Node ≥ 20.19 floor**, to get a
   consistent, supported toolchain, accepting a documented fresh-machine
   prerequisite and a hard Node-version lower bound.
+- [`0002`](./0002-preserve-use-client-directives.md) — In the context of the Vite
+  bundle stripping per-component `'use client'` so the barrel couldn't import into
+  Next.js Server Components, facing a blanket-banner fix that would trap pure utils
+  behind a client boundary, we chose **`preserveModules` + `rollup-preserve-directives`
+  (per-module directives, per-format output array)**, to make components client
+  boundaries while `cleanClasses` stays server-safe, accepting a per-module `dist/`
+  and a build that must keep the two-format output array.
