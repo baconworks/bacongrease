@@ -6,8 +6,8 @@
 // colors
 $sidenav-background-color: functions.getColor(greyscale, 700);
 $sidenav-font-color: functions.getColor(white);
-$sidenav-link-active-color: functions.getColor(ac, light-blue);
-$sidenav-link-hover-color: functions.getColor(ac, grey);
+$sidenav-link-active-color: functions.getColor(custom, light-blue);
+$sidenav-link-hover-color: functions.getColor(custom, grey);
 
 // spacing
 $sidenav-hamburger-vertical-spacing: 2rem;

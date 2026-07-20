@@ -32,9 +32,25 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
 
-  // set default sitewide font
-  font-family: variables.$font-copy;
-  font-size: variables.$font-size-default;
+  // themed surface + text (design tokens) — the whole app follows the theme by default
+  background-color: var(--background);
+  color: var(--foreground);
+
+  // sitewide type from the token scale
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+}
+
+// text-wrapping (Elements of Typographic Style): balance headings so they don't leave orphans,
+// and let body copy avoid short last lines. Progressive — ignored where unsupported.
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  line-height: var(--line-height-tight);
+}
+
+p {
+  text-wrap: pretty;
 }
 
 ul {
@@ -52,4 +68,16 @@ input {
   border: none;
   padding: 0;
   margin: 0;
+}
+
+// Accessibility: honour a reduced-motion preference — collapse animation/transition to near-instant.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -5,7 +5,7 @@
 // Note: MarginRight set in component via styleOptions prop
 
 // colors
-$side-drop-background-color: functions.getColor(ac, white);
+$side-drop-background-color: functions.getColor(custom, white);
 
 // shadows
 $side-drop-shadow: variables.$shadow-default;

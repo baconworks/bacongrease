@@ -10,7 +10,7 @@
   color: currentColor;
 
   &--active {
-    color: functions.getColor(ac, light-blue);
+    color: functions.getColor(custom, light-blue);
   }
 
   &_text {

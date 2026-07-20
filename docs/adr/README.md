@@ -72,3 +72,12 @@ tags: [decision]
   (per-module directives, per-format output array)**, to make components client
   boundaries while `cleanClasses` stays server-safe, accepting a per-module `dist/`
   and a build that must keep the two-format output array.
+- [`0003`](./0003-design-tokens-css-custom-properties.md) — In the context of a
+  compile-time-only SCSS system that couldn't theme at runtime or let a consumer
+  override anything, facing a real app (`sales-platform/web`) that needed both, we
+  chose a **two-tier CSS-custom-property token layer** (palette primitives → semantic
+  roles) emitted from the SCSS, in **OKLCH**, with full scales (golden-ratio type, 4px
+  spacing, elevation, z-index, motion) and light/dark via `prefers-color-scheme` +
+  `[data-theme]`, to get runtime theming and per-layer overrides, accepting more
+  indirection than `getColor()`, seed system-colour ramps that still need Leonardo
+  contrast verification, and an incremental per-component migration to the tokens.

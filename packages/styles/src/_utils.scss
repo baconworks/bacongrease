@@ -7,9 +7,10 @@
 @use './functions';
 
 // Inline text-link affordance for entity links within display bodies. Distinct
-// from the bare `a` reset so navigable fields read as clearly clickable.
+// from the bare `a` reset so navigable fields read as clearly clickable. Uses the
+// semantic accent token, so it follows the theme and any app override.
 .text-link {
-  color: functions.getColor(ac, blue);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 0.3rem;
   font-weight: 500;
@@ -18,8 +19,21 @@
   &:hover,
   &:focus-visible {
     text-decoration-thickness: 2px;
-    color: functions.getColor(ac, light-blue);
+    color: var(--accent);
+    opacity: 0.85;
   }
+}
+
+// Tabular figures — equal-width digits so columns of numbers line up (amounts, box office, dates).
+// Pair with --font-mono where a fully monospaced treatment is wanted.
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+// Cap prose at a readable measure (Elements of Typographic Style — 45–75 characters).
+.measure {
+  max-width: var(--measure);
 }
 
 // set background to themed gradients

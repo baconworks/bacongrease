@@ -27,6 +27,20 @@
   @return map.get(colors.$color-families, $colorFamily, $value);
 }
 
+// A step on a modular type scale: base × ratio^step, in rem, rounded to 3 decimals for tidy output.
+// Negative steps go below the base (xs/sm), positive above (lg…display). See _variables for the
+// golden-ratio base/ratio the token layer feeds in.
+@function modularScale($step, $base, $ratio) {
+  $scaled: math.div($base, 1rem) * math.pow($ratio, $step);
+  @return math.div(math.round($scaled * 1000), 1000) * 1rem;
+}
+
+// Read a design token: `token(foreground)` -> `var(--foreground)`. Ergonomic accessor so component
+// SCSS references the runtime token rather than a raw value.
+@function token($name) {
+  @return var(--#{$name});
+}
+
 // create gradient from color family and range
 /**
   * @param $direction   Either the angle: number or direction: string of the

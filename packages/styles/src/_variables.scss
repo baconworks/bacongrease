@@ -26,11 +26,6 @@ $gradient-primary-linear: functions.createGradientFromColorMap(
   primary
 );
 
-$gradient-primary-linear-transparent: functions.createGradientFromColorMap(
-  $gradient-angle,
-  primaryTransparent
-);
-
 $gradient-secondary-linear: functions.createGradientFromColorMap(
   $gradient-angle,
   secondary
@@ -47,41 +42,35 @@ $gradient-greyscale-linear: functions.createGradientFromColorMap(
   $endColor: 1200
 );
 
-$gradient-greyscale-linear-transparent: functions.createGradientFromColorMap(
-  $gradient-angle,
-  greyscaleTransparent,
-  $endColor: 1200
-);
-
 // anonymous gradients
 $gradient-anonymous-blue-to-purple: linear-gradient(
   135deg,
-  functions.getColor(ac, blue) 0%,
-  functions.getColor(ac, purple) 100%
+  functions.getColor(custom, blue) 0%,
+  functions.getColor(custom, purple) 100%
 );
 
 $gradient-anonymous-teal-to-green: linear-gradient(
   135deg,
-  functions.getColor(ac, teal) 0%,
-  functions.getColor(ac, green) 100%
+  functions.getColor(custom, teal) 0%,
+  functions.getColor(custom, green) 100%
 );
 
 $gradient-anonymous-yellow-to-orange: linear-gradient(
   135deg,
-  functions.getColor(ac, yellow) 0%,
-  functions.getColor(ac, orange) 100%
+  functions.getColor(custom, yellow) 0%,
+  functions.getColor(custom, orange) 100%
 );
 
 $gradient-anonymous-orange-to-red: linear-gradient(
   135deg,
-  functions.getColor(ac, orange) 0%,
-  functions.getColor(ac, red) 100%
+  functions.getColor(custom, orange) 0%,
+  functions.getColor(custom, red) 100%
 );
 
 $gradient-anonymous-white-to-grey: linear-gradient(
   135deg,
-  functions.getColor(ac, white) 0%,
-  functions.getColor(ac, grey) 100%
+  functions.getColor(custom, white) 0%,
+  functions.getColor(custom, grey) 100%
 );
 
 // shadows
@@ -108,3 +97,10 @@ $line-height-default: calc($font-size-default * 1.618);
 $font-size-h1: 4.19rem;
 $font-copy: 'quiet-sans', sans-serif;
 $font-header: 'quiet-sans', sans-serif;
+
+// type scale (Elements of Typographic Style): a golden-ratio modular scale. The step is √φ, so a
+// full golden ratio (φ ≈ 1.618) spans every TWO steps and the display size lands on base × φ² —
+// which is the classic 4.19rem the h1 already used. Retune the base or ratio to reshape the scale.
+$type-scale-base: 1.6rem;
+$type-scale-ratio: 1.2720196; // √φ
+$golden-ratio: 1.618;

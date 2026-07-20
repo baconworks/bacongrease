@@ -18,9 +18,9 @@ development, documentation, and dogfooding environment.
 ```
 bacongrease/
 ├── packages/
-│   ├── styles/       @bacongrease/styles      SCSS design system (no build yet)
-│   │   └── src/      _colors _functions _mixins _variables _typography
-│   │                 _base _utils index.scss
+│   ├── styles/       @bacongrease/styles      SCSS design system + runtime CSS-var tokens
+│   │   └── src/      _colors(OKLCH) _functions _mixins _variables _typography
+│   │                 _tokens(runtime tokens + theming) _base _utils index.scss
 │   └── components/   @bacongrease/components   React primitives
 │       └── src/
 │           ├── index.ts                        barrel (all exports)
@@ -76,6 +76,13 @@ utils behind a client boundary.
   rationale (SCSS is *not* a dinosaur here because the value is compile-time
   logic — gradient generation, color scaling, class generation — which native
   CSS can't do) is settled; don't relitigate it unless asked.
+- **Read design tokens, not raw palette (ADR-0003).** New/updated component styles
+  reference the runtime CSS-variable tokens — `var(--foreground)`, `var(--accent)`,
+  `var(--space-4)`, `var(--shadow-md)` — so they theme and respond to app overrides.
+  Reserve SCSS `getColor()`/`$vars` for what CSS vars can't do (breakpoints in
+  `@media`, compile-time gradient math). Hover/state that used `color.scale()` (a
+  compile-time function that can't touch a CSS variable) moves to `color-mix(in oklch, …)`.
+  Colors are **OKLCH**.
 - **File naming:** `name.component.tsx`, `name.styles.scss`, `name.stories.tsx`,
   `name.types.ts`. SCSS partials are `_name.scss`.
 - **Components** are default-exported; the barrel re-exports them as named
@@ -276,6 +283,16 @@ both green, committed on `main`):
   linker) and set a Node ≥ 20.19 floor. Recorded in ADR
   [`0001`](./docs/adr/0001-yarn4-node20-toolchain.md). Verified: install +
   typecheck + build + build-storybook + pack dry-runs all green.
+- ✅ **Design-token layer + theming (ADR-0003)** — `_tokens.scss` emits the system as
+  runtime CSS custom properties: two tiers (palette primitives → semantic roles), full
+  scales (golden-ratio type, 4px spacing, radius, elevation, z-index, motion, container,
+  control heights), light/dark via `prefers-color-scheme` + `[data-theme]` override.
+  Palette moved to **OKLCH**; a **system/status** color family added (success/warning/
+  danger/info); the client-named `ac` family renamed to `custom`; superseded
+  `*Transparent` families removed (use `color-mix`). Consumed by `sales-platform/web`.
+- ✅ **Button primary variant migrated to tokens** (incremental audit-on-intake) —
+  themes via `--accent`/`--accent-contrast` with a `color-mix` hover. Other variants
+  still read the palette and migrate as they're adopted.
 
 **Not done yet — likely next steps, roughly in priority order:**
 
@@ -283,16 +300,17 @@ both green, committed on `main`):
    tarballs, but we have NOT yet consumed the built packages back into a real
    app. That's the true end-to-end test — do it next (either `yarn add` the
    packed tarballs, or a `link:`/`portal:` dep, into `../ac-booking`).
-2. **CSS custom-property token layer.** Expose the palette/key tokens as CSS
-   variables so consumers theme at runtime without recompiling Sass. This is the
-   recommended upgrade that makes it a real library vs. "my styles."
-3. **Port tests.** The source app has Vitest + Testing Library tests for these
+2. **Migrate the remaining components to tokens** (audit-on-intake). Button's solid
+   primary is done; secondary/tertiary/greyscale/outline/gradient/text and the other
+   components (dropdown, modal, sidenav, …) still read raw `getColor()`, so they don't
+   theme yet. Migrate each as it's pulled into a consuming app — reworking `color.scale`
+   hovers to `color-mix` (SCSS color functions can't touch a CSS variable).
+3. **Regenerate the system-color ramps in Leonardo** against real WCAG contrast targets
+   — the current ones are even OKLCH seeds, not contrast-verified.
+4. **Port tests.** The source app has Vitest + Testing Library tests for these
    components (`*.component.test.tsx`); they weren't brought over.
-4. **Publish for real.** Packages are still `version: 0.0.0` and unpublished.
-   Bump versions and `npm publish` (or set up a release flow) when ready. A repo
-   now exists on GitHub under the `baconworks` org (pushed this session).
-5. **Rename the `ac` color family** to something brand-neutral (it's the old app
-   brand name; spinner/hamburger/utils reference `getColor(ac, …)`).
+5. **Publish for real.** Packages are still `version: 0.0.0` and unpublished.
+   Bump versions and `npm publish` (or set up a release flow) when ready.
 
 ## Source of truth for the original components
 

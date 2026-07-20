@@ -1,0 +1,222 @@
+/*
+  * DESIGN TOKENS — the runtime, overridable layer of the design system.
+  *
+  * Everything here is emitted as a CSS custom property so the CONSUMING APP can override any of it
+  * (a single raw colour, a semantic role, the spacing step, the type scale, the shadow, a gradient)
+  * by redeclaring the variable — no recompile. The SCSS maps/variables (_colors, _variables) remain
+  * the AUTHORING source (paste Leonardo-generated families into _colors); this file turns them into
+  * the CSS-variable defaults.
+  *
+  * Two tiers:
+  *   1. PRIMITIVES  (--color-<family>-<shade>)  the raw palette — one true value each.
+  *   2. SEMANTIC    (--foreground, --accent, …)  roles that POINT AT primitives and flip per theme.
+  * Components and app CSS should read SEMANTIC tokens (and the scales) — never a raw hex — so a theme
+  * change or an app override flows through automatically.
+  *
+  * Include once at the app top level (via `@use '@bacongrease/styles'`, which emits this at :root).
+*/
+@use 'sass:map';
+@use './colors';
+@use './functions';
+@use './variables';
+
+// --- Tier 1: PRIMITIVES ------------------------------------------------------------------------
+// The themeable families become CSS vars so an app can retune the palette itself. The `default`
+// shade drops its suffix (--color-primary); numeric shades keep it (--color-primary-500). The
+// decorative `custom` family stays SCSS-only (internal gradient use), so the public token surface is
+// generic and intentional. (Per-color transparency is derived on demand with color-mix — no
+// pre-baked transparent families.)
+@mixin emit-color-primitives {
+  --color-white: #{functions.getColor(white)};
+  --color-black: #{functions.getColor(black)};
+
+  @each $family in (primary, secondary, tertiary, success, warning, danger, info, greyscale) {
+    @each $shade, $value in map.get(colors.$color-families, $family) {
+      @if $shade == 'default' {
+        --color-#{$family}: #{$value};
+      } @else {
+        --color-#{$family}-#{$shade}: #{$value};
+      }
+    }
+  }
+}
+
+// --- Scales (single set; not theme-dependent, but overridable) ----------------------------------
+// Spacing: a 4px grid (root font-size is 62.5%, so 1rem = 10px, 0.4rem = 4px).
+// Type: a modular scale (~major third) off a 1.6rem base — Bringhurst's counsel to build sizes from
+// a ratio, not ad hoc. Line-height: tight for display, ~1.5 for body. Measure: the readable line
+// length (66ch ideal, 45–75ch range) so prose can cap its width. All overridable.
+@mixin emit-scales {
+  // spacing (4px grid)
+  --space-1: 0.4rem;
+  --space-2: 0.8rem;
+  --space-3: 1.2rem;
+  --space-4: 1.6rem;
+  --space-5: 2.4rem;
+  --space-6: 3.2rem;
+  --space-7: 4.8rem;
+  --space-8: 6.4rem;
+
+  // radii
+  --radius-sm: 0.4rem;
+  --radius-md: 0.8rem;
+  --radius-lg: 1.6rem;
+  --radius-pill: 9999px;
+
+  // type scale — golden-ratio modular scale (step √φ; a full φ every two steps). base × φ² lands the
+  // display size on the classic 4.19rem. Retune via $type-scale-base / $type-scale-ratio.
+  --font-size-xs: #{functions.modularScale(-2, variables.$type-scale-base, variables.$type-scale-ratio)};
+  --font-size-sm: #{functions.modularScale(-1, variables.$type-scale-base, variables.$type-scale-ratio)};
+  --font-size-base: #{functions.modularScale(0, variables.$type-scale-base, variables.$type-scale-ratio)};
+  --font-size-lg: #{functions.modularScale(1, variables.$type-scale-base, variables.$type-scale-ratio)};
+  --font-size-xl: #{functions.modularScale(2, variables.$type-scale-base, variables.$type-scale-ratio)};
+  --font-size-2xl: #{functions.modularScale(3, variables.$type-scale-base, variables.$type-scale-ratio)};
+  --font-size-3xl: #{functions.modularScale(4, variables.$type-scale-base, variables.$type-scale-ratio)};
+
+  // leading (Bringhurst: tighter as size grows; ~1.5 body; the generous prose leading is φ itself)
+  --line-height-tight: 1.15;
+  --line-height-base: 1.5;
+  --line-height-loose: #{variables.$golden-ratio};
+
+  // measure — readable line length (ideal 66ch, range 45–75ch)
+  --measure: 66ch;
+  --measure-narrow: 45ch;
+  --measure-wide: 75ch;
+
+  // font weights
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  // letter-spacing / tracking (Bringhurst: loosen tracking for caps/small text)
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-caps: 0.08em;
+
+  // font families (host app provides the actual faces; see _typography.scss)
+  --font-body: #{variables.$font-copy};
+  --font-heading: #{variables.$font-header};
+  // monospace — for tabular figures (amounts, box office, dates in tables); pair with the
+  // `.tabular-nums` utility so columns of numbers align.
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
+
+  // motion — a small duration ladder + named easings (override to retune feel)
+  --duration-fast: 0.12s;
+  --duration-base: 0.2s;
+  --duration-slow: 0.4s;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: ease-in-out;
+  // back-compat aliases for the original single-value motion vars
+  --transition-duration: var(--duration-base);
+  --transition-timing: var(--ease-standard);
+
+  // elevation — a layered "smooth shadow" scale; --shadow-md is the original default.
+  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.06), 0 1px 1px hsla(0, 0%, 0%, 0.04);
+  --shadow-md: #{variables.$shadow-default};
+  --shadow-lg: 0 0 0 1px hsla(0, 0%, 0%, 0.05), 0 2px 4px hsla(0, 0%, 0%, 0.05),
+    0 6px 12px hsla(0, 0%, 0%, 0.08), 0 12px 24px hsla(0, 0%, 0%, 0.1);
+  --shadow-default: var(--shadow-md);
+
+  // z-index ladder — one scale so layered components never fight over stacking
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-popover: 1400;
+  --z-toast: 1500;
+
+  // layout — page/content max widths (text still caps at --measure)
+  --container-narrow: 60rem;
+  --container: 100rem;
+  --container-wide: 128rem;
+
+  // control sizing — shared heights so buttons/inputs line up
+  --control-height-sm: 3.2rem;
+  --control-height-md: 4rem;
+  --control-height-lg: 4.8rem;
+
+  // gradients (computed from the palette; override the whole value to retarget)
+  --gradient-primary: #{variables.$gradient-primary-linear};
+  --gradient-secondary: #{variables.$gradient-secondary-linear};
+  --gradient-tertiary: #{variables.$gradient-tertiary-linear};
+  --gradient-greyscale: #{variables.$gradient-greyscale-linear};
+
+  // derived surfaces — computed from semantic roles via color-mix, so they re-resolve per theme:
+  // a faint neutral fill (row hovers, chips) and subtle status tints (alert/banner backgrounds).
+  --surface-muted: color-mix(in oklch, var(--foreground) 6%, var(--background));
+  --overlay: rgba(0, 0, 0, 0.5);
+  --danger-surface: color-mix(in oklch, var(--danger) 12%, var(--background));
+  --success-surface: color-mix(in oklch, var(--success) 12%, var(--background));
+  --warning-surface: color-mix(in oklch, var(--warning) 14%, var(--background));
+  --info-surface: color-mix(in oklch, var(--info) 12%, var(--background));
+}
+
+// --- Tier 2: SEMANTIC roles (flip per theme) ----------------------------------------------------
+@mixin theme-light {
+  color-scheme: light;
+
+  --background: var(--color-white);
+  --surface: var(--color-white);
+  --foreground: var(--color-greyscale-1000);
+  --muted: var(--color-greyscale-400);
+  --border: rgba(0, 0, 0, 0.12);
+
+  --accent: var(--color-primary);
+  --accent-contrast: var(--color-white);
+  --danger: var(--color-danger);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --info: var(--color-info);
+
+  --focus-ring: var(--color-primary-300);
+  --shadow: var(--shadow-md);
+}
+
+@mixin theme-dark {
+  color-scheme: dark;
+
+  --background: var(--color-greyscale-1000);
+  --surface: var(--color-greyscale-800);
+  --foreground: oklch(96.1% 0 0);
+  --muted: var(--color-greyscale-200);
+  --border: rgba(255, 255, 255, 0.15);
+
+  --accent: var(--color-primary-200);
+  --accent-contrast: var(--color-greyscale-1100);
+  // status colours lift to a lighter shade so they read on the dark surface
+  --danger: var(--color-danger-300);
+  --success: var(--color-success-300);
+  --warning: var(--color-warning-300);
+  --info: var(--color-info-300);
+
+  --focus-ring: var(--color-primary-200);
+  --shadow: var(--shadow-md);
+}
+
+// --- Emit ---------------------------------------------------------------------------------------
+// Default is LIGHT at :root. Dark applies when the OS asks (unless the app has pinned light), and an
+// explicit [data-theme] on the root always wins — so an app can offer a manual light/dark switch.
+:root {
+  @include emit-color-primitives;
+  @include emit-scales;
+  @include theme-light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include theme-dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include theme-dark;
+}
+
+:root[data-theme='light'] {
+  @include theme-light;
+}

@@ -33,8 +33,8 @@ $button-gradient-secondary-linear: globalVariables.$gradient-secondary-linear;
 $button-gradient-tertiary-linear: globalVariables.$gradient-tertiary-linear;
 $button-gradient-greyscale-linear: globalVariables.$gradient-greyscale-linear;
 
-// shadows
-$button-shadow: globalVariables.$shadow-default;
+// shadows — the elevation token (same layered shadow, now theme-overridable)
+$button-shadow: var(--shadow-md);
 $button-shadow-text:  0.0px 0.0px 1px hsla(0, 0%, 0%, 0.05),
                       0.3px 0.4px 1px hsla(0, 0%, 0%, 0.02),
                       0.9px 1.5px 1px hsla(0, 0%, 0%, 0.045);

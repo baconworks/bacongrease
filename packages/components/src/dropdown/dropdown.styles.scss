@@ -5,7 +5,7 @@
 // Note: MarginTop set in component via styleOptions prop
 
 // colors
-$dropdown-background-color: functions.getColor(ac, white);
+$dropdown-background-color: functions.getColor(custom, white);
 
 // shadows
 $dropdown-shadow: variables.$shadow-default;

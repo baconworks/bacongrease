@@ -5,7 +5,7 @@
 // colors
 $hamburger-bar-color: functions.getColor(white);
 $hamburger-bar-color-open: functions.getColor(white);
-$hamburger-background-color: functions.getColor(ac, grey);
+$hamburger-background-color: functions.getColor(custom, grey);
 
 // sizing
 $hamburger-bar-height: 2px;
@@ -73,7 +73,7 @@ $hamburger-opacity-transition: .3s;
   // indicator appears on hover and focus
   &:hover::before,
   &:focus-within::before {
-    background-color: functions.getColor(ac, grey);
+    background-color: functions.getColor(custom, grey);
     opacity: 1;
   }
 

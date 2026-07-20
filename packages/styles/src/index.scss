@@ -16,5 +16,6 @@
 @forward './typography';
 
 // side-effecting layers (emit CSS)
+@use './tokens';   // emits the design tokens at :root (must precede base, which consumes them)
 @use './base';
 @use './utils';
