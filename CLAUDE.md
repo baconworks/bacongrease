@@ -80,6 +80,26 @@ utils behind a client boundary.
   `name.types.ts`. SCSS partials are `_name.scss`.
 - **Components** are default-exported; the barrel re-exports them as named
   (`Button`, `Modal`, …) plus their prop types.
+- **A component built around one HTML element extends that element's props (owner
+  preference).** For a component wrapping a single element (Button→`<button>`,
+  Input→`<input>`, Link→`<a>`), write its props as
+  `interface FooProps extends ComponentPropsWithRef<'el'> { …custom }`, pull out the custom
+  ones, and pass the rest through to the element — so it gets every built-in property
+  (`type`, `disabled`, `name`, `aria-*`, event handlers, **and `ref`**) without listing them.
+  Two rules that keep it safe: **(1) use `…WithRef`** (React 19 treats `ref` as a normal
+  property) so the element can be focused or referenced — `…WithoutRef` removes that ability;
+  **(2) also run the caller's event handlers** — if the component defines its own `onClick` /
+  `onMouseEnter`, call the one the caller passed as well, or the caller's is silently ignored.
+  A component made of several elements (Modal, Sidenav) should **not** do this — give each
+  part its own named properties instead.
+- **Accessibility is a requirement, not a finishing touch (owner preference).**
+  Every component must meet the WCAG 2.1 AA accessibility standard: use the right
+  HTML element for the job; tie every label to its input; make sure every clickable
+  or interactive element has a name a screen reader can read; give decorative images
+  an empty `alt=""` so they aren't read out (the name comes from the label); keep a
+  visible focus outline; make everything work with the keyboard; and reach for
+  `aria-*` only when plain HTML can't express it. Check this on every new or changed
+  component and call out gaps.
 
 ## Working conventions (how to operate here)
 
@@ -92,6 +112,12 @@ app-specific. The detail for the docs vault lives in [`docs/README.md`](./docs/R
   the ask and the right thing differ, do the right thing or say so.
 - State uncertainty and give options — don't guess fluently. Never fabricate
   specifics (APIs, config keys, versions); verify or ask.
+- No jargon — plain language (owner preference). Skip insider/software slang
+  ("clobber", "seam", "footgun", "dogfood", "boilerplate", "anti-corruption layer");
+  say the plain thing (overwrite; the one place to swap X; an easy mistake; use it
+  ourselves; repeated setup; the layer that translates the API's format). If a
+  specialist term is genuinely the precise one, define it the first time. Applies to
+  docs, comments, and replies.
 - Verify before claiming done — exercise the change (here: `yarn typecheck` +
   `yarn build-storybook`, and run the affected flow), don't just typecheck.
   Report failures with output.

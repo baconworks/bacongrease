@@ -1,11 +1,11 @@
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import type { IconType } from 'react-icons';
 
 /**
  * Provides an interface for the Button component to provide custom styles,
  * pass an icon, set the text, and set the variant and style options.
 */
-export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends ComponentPropsWithRef<'button'> {
   /** Optional className allowing user to customize the button style */
   className?: string;
   /**
