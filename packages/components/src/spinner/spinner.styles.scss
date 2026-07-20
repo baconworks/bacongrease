@@ -55,51 +55,51 @@
     }
 
     &--black {
-      background-color: functions.getColor(ac, black);
+      background-color: functions.getColor(custom, black);
     }
 
     &--grey {
-      background-color: functions.getColor(ac, grey);
+      background-color: functions.getColor(custom, grey);
     }
 
     &--pink {
-      background-color: functions.getColor(ac, pink);
+      background-color: functions.getColor(custom, pink);
     }
 
     &--red {
-      background-color: functions.getColor(ac, red);
+      background-color: functions.getColor(custom, red);
     }
 
     &--orange {
-      background-color: functions.getColor(ac, orange);
+      background-color: functions.getColor(custom, orange);
     }
 
     &--yellow {
-      background-color: functions.getColor(ac, yellow);
+      background-color: functions.getColor(custom, yellow);
     }
 
     &--teal {
-      background-color: functions.getColor(ac, teal);
+      background-color: functions.getColor(custom, teal);
     }
 
     &--green {
-      background-color: functions.getColor(ac, green);
+      background-color: functions.getColor(custom, green);
     }
 
     &--light-blue {
-      background-color: functions.getColor(ac, light-blue);
+      background-color: functions.getColor(custom, light-blue);
     }
 
     &--blue {
-      background-color: functions.getColor(ac, blue);
+      background-color: functions.getColor(custom, blue);
     }
 
     &--purple {
-      background-color: functions.getColor(ac, purple);
+      background-color: functions.getColor(custom, purple);
     }
 
     &--white {
-      background-color: functions.getColor(ac, white);
+      background-color: functions.getColor(custom, white);
     }
   }
 }
