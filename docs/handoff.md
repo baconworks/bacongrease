@@ -32,7 +32,10 @@ the ac-booking app; being generically re-proven.
 - **`Dropdown` a11y** — **Escape closes** it (a keyboard/SR user could only click away before), and
   **focus is managed**: on open, focus moves into the dropdown (first focusable child, else the
   container via `tabIndex=-1`); on close, focus returns to the trigger. Meets the WCAG-AA keyboard
-  requirement for the account menu.
+  requirement for the account menu. A follow-up (PR #11) also fixed a first-open caret
+  miscentre — the positioner now recomputes on `requestAnimationFrame` + `document.fonts.ready`, since
+  a late web-font swap can slide the trigger sideways (the target ResizeObserver only catches resizes,
+  not moves); plus `focus({ preventScroll: true })` so opening never scrolls the page.
 - **`themeInitScript( storageKey )`** — a server-safe helper returning the inline `<head>` script
   that stamps `data-theme` from the persisted choice **before first paint**, killing the theme flash
   (FOUC). Mirrors `ThemeToggle`'s mount rule (stamp only on an explicit stored choice) so they can't
