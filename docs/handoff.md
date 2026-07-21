@@ -58,12 +58,21 @@ extends `ComponentPropsWithRef<'el'>`** (forward the `ref`; also run the caller'
 components made of several elements give each part its own named props instead). No ADR —
 component correctness, not an architectural decision.
 
+**Also recent — Sidenav + Hamburger (brought in for `sales-platform/web`).** Tokenized (themes; a
+subtree can be theme-pinned since `[data-theme]` now targets any element, not just `:root`). The
+**Sidenav** takes a flat list OR `sections` (the app owns role/plan gating, not the nav), uses a
+**hamburger-pin** toggle with a `toggle` prop (`none`/`x`/`chevron`), exposes adjustable geometry as
+CSS vars (default 48px accessible rail), and no longer hardcodes its grid placement. The action slot
+was **removed** (deferred — belongs as a nav-item CTA, not the general Button). **Hamburger** audit
+fixes (tokenized bars, `type=button`, real ☰↔✕ morph, invalid CSS dropped). Flagged: the **`Icon`**
+component has a latent sizing bug (unsized `.icon` span) to fix on its own intake.
+
 ## What's next
 
-- **Migrate remaining components to tokens (audit-on-intake).** Button's solid primary is done; the
-  other Button variants and every other component still read raw `getColor()`, so they don't theme
-  yet. Migrate each as it's pulled into `web/` — reworking `color.scale()` hovers to `color-mix(in
-  oklch, …)` (SCSS color functions can't touch a CSS variable).
+- **Migrate remaining components to tokens (audit-on-intake).** Done: Button (primary), Sidenav,
+  Hamburger. Still on raw `getColor()`: other Button variants, dropdown / modal / side-drop / link /
+  spinner / icon. Migrate each as it's pulled into `web/` — reworking `color.scale()` hovers to
+  `color-mix(in oklch, …)` (SCSS color functions can't touch a CSS variable).
 - **Regenerate system-color ramps in Leonardo** against real WCAG contrast targets (current ones are
   even OKLCH seeds).
 - **Component audit on intake.** The components predate this workflow. When one is *brought into*

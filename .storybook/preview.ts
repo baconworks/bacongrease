@@ -5,6 +5,29 @@ import type { Preview } from "@storybook/react";
 import "../packages/styles/src/index.scss";
 
 const preview: Preview = {
+  // A theme switch in the toolbar stamps [data-theme] on the root so stories can be viewed in
+  // light or dark — exercising the design-token theming (ADR-0003).
+  globalTypes: {
+    theme: {
+      description: "Theme",
+      defaultValue: "light",
+      toolbar: {
+        title: "Theme",
+        icon: "circlehollow",
+        items: [
+          { value: "light", title: "Light" },
+          { value: "dark", title: "Dark" },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  decorators: [
+    ( Story, { globals } ) => {
+      document.documentElement.setAttribute( "data-theme", globals.theme || "light" );
+      return Story();
+    },
+  ],
   parameters: {
     controls: {
       matchers: {
