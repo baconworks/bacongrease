@@ -124,10 +124,41 @@ const Dropdown = ({
     };
   }, [ open, positionDropdown, onClose, targetRef ]);
 
+  // Keyboard: Escape closes (a keyboard/screen-reader user must be able to dismiss it, not only
+  // click away).
+  useEffect(() => {
+    if (!open) return;
+
+    const handleEscape = ( event: KeyboardEvent ) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [ open, onClose ]);
+
+  // Focus management: on open, move focus into the dropdown (its first focusable child, else the
+  // container) so keyboard users land inside it; on close, return focus to the trigger. Without this
+  // a keyboard user opens the menu but focus stays on the page behind it.
+  useEffect(() => {
+    if (!open) return;
+
+    const trigger = targetRef.current;
+    const dropdown = dropdownRef.current;
+    const firstFocusable = dropdown?.querySelector<HTMLElement>(
+      'a[href], button:not(:disabled), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+
+    ( firstFocusable ?? dropdown )?.focus();
+
+    return () => trigger?.focus?.();
+  }, [ open, targetRef ]);
+
   return (
     <div
       { ...divProps }
       ref={ dropdownRef }
+      tabIndex={ -1 }
       style={{ marginTop: styleOptions.marginTop }}
       className={
         cleanClasses(

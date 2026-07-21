@@ -28,3 +28,4 @@ export type { SideNavProps, SideNavLinkData } from './sidenav/sidenav.component'
 
 // helpers
 export { cleanClasses } from './utils/clean-classes';
+export { themeInitScript } from './theme-toggle/theme-init-script';
