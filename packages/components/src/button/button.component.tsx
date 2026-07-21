@@ -21,7 +21,6 @@ import { buttonIconGradientVariants } from "./data/button.gradients";
 
 // types
 import type { ButtonProps } from "./types/button.types";
-import { ButtonVariants } from "./types/button.types";
 
 /**
   * Principle UI component for prompting a change in the interface: i.e. open/close,
@@ -38,7 +37,7 @@ const Button = ({
   onMouseLeave,
   ref,
   styleOptions = [],
-  variant = ButtonVariants.primary,
+  variant = 'primary',
   ...buttonProps
 }: ButtonProps) => {
   // icon gradient state

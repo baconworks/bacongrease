@@ -11,8 +11,8 @@ export { default as Sidenav } from './sidenav/sidenav.component';
 export { default as Spinner } from './spinner/spinner.component';
 
 // types
-export type { ButtonProps, ButtonStyleOption } from './button/types/button.types';
-export { ButtonVariants, buttonStyles } from './button/types/button.types';
+export type { ButtonProps, ButtonStyleOption, ButtonVariant } from './button/types/button.types';
+export { buttonStyles, buttonVariants } from './button/types/button.types';
 export type { HamburgerProps } from './hamburger/hamburger.component';
 export type { IconProps } from './icon/icon.component';
 export type {

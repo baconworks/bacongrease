@@ -68,8 +68,9 @@
   // iterate through the number of stops and generate colors
   // and offsets for each stop, adding them to the gradient string
   @for $i from 0 through $numStops {
-    // get current color from color map
-    $color: getColor($colorFamily, $endColor + ($i * -100));
+    // get current color from color map — ascending (light → dark) so a gradient button starts on the
+    // dark end and BRIGHTENS toward the light end on hover (matching the solid variants).
+    $color: getColor($colorFamily, $startColor + ($i * 100));
     $currentStop: ($color);
 
     // if offsets are provided convert them to string

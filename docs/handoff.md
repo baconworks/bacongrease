@@ -28,6 +28,20 @@ primitives — button, dropdown, hamburger, icon, linear-gradient, link, modal, 
 spinner, plus the `cleanClasses` util). Storybook is the dev/dogfooding environment. Extracted from
 the ac-booking app; being generically re-proven.
 
+**Latest — Button polish** (surfaced consuming it in `web/`): `variant` is now a **string-literal
+union** (`variant="primary"`, no `ButtonVariants` import) via `buttonVariants` + `ButtonVariant`;
+gradient buttons **brighten** on hover (were darkening) — the gradient stop order was reversed to
+light→dark; added an `--accent-hover` interactive-state token (a resolved palette shade, since a
+`color-mix()` target doesn't animate in a transition). **KNOWN ISSUE — #7:** the **primary** variant
+(and pill/shadow, and the app Sign-out) still **snaps** on hover instead of animating, even after its
+transition was made a literal `0.2s ease-out` identical to the working `secondary` variant. Cause not
+found (color-mix, var-timing, and shorthand were all ruled out via browser isolation; the sandboxed
+artifact wouldn't let me drive a real hover). **First step on revisit: a fresh dev-server restart** —
+a stale HMR build is the top suspect (testing was on a long-running server).
+
+**Also — `.github/copilot-instructions.md`** added, aligning the Copilot coding agent to CLAUDE.md +
+the DoD + the no-corpus/synthetic-data guardrail (for when the agent is enabled; #7 is the pilot).
+
 **Recent — design tokens + theming (ADR-0003).** `_tokens.scss` now emits the whole design system as
 **runtime CSS custom properties** at `:root`, in two tiers: palette **primitives** (`--color-*`) →
 **semantic roles** (`--foreground`, `--accent`, `--danger`, …) that flip per theme. Plus full scales:

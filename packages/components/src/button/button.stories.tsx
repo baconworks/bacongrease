@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { FaArrowRight } from 'react-icons/fa';
 
 import Button from './button.component';
-import { ButtonVariants } from './types/button.types';
+import { buttonVariants } from './types/button.types';
 
 const meta = {
   title: 'Primitives/Button',
@@ -11,7 +11,7 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: Object.values(ButtonVariants),
+      options: buttonVariants,
     },
     styleOptions: {
       control: 'check',
@@ -20,7 +20,7 @@ const meta = {
   },
   args: {
     label: 'Button',
-    variant: ButtonVariants.primary,
+    variant: 'primary',
   },
 } satisfies Meta<typeof Button>;
 
@@ -32,10 +32,10 @@ export const Primary: Story = {};
 export const Variants: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-      <Button label="Primary" variant={ ButtonVariants.primary } />
-      <Button label="Secondary" variant={ ButtonVariants.secondary } />
-      <Button label="Tertiary" variant={ ButtonVariants.tertiary } />
-      <Button label="Greyscale" variant={ ButtonVariants.greyscale } />
+      <Button label="Primary" variant="primary" />
+      <Button label="Secondary" variant="secondary" />
+      <Button label="Tertiary" variant="tertiary" />
+      <Button label="Greyscale" variant="greyscale" />
     </div>
   ),
 };
