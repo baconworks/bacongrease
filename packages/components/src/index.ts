@@ -1,7 +1,9 @@
 // components
+export { default as AccountMenu } from './account-menu/account-menu.component';
 export { default as Button } from './button/button.component';
 export { default as Dropdown } from './dropdown/dropdown.component';
 export { default as Hamburger } from './hamburger/hamburger.component';
+export { default as Header } from './header/header.component';
 export { default as Icon } from './icon/icon.component';
 export { default as LinearGradient } from './linear-gradient/linear-gradient.component';
 export { default as Link } from './link/link.component';
@@ -9,8 +11,10 @@ export { default as Modal } from './modal/modal.component';
 export { default as SideDrop } from './side-drop/side-drop.component';
 export { default as Sidenav } from './sidenav/sidenav.component';
 export { default as Spinner } from './spinner/spinner.component';
+export { default as ThemeToggle } from './theme-toggle/theme-toggle.component';
 
 // types
+export type { AccountUser } from './account-menu/account-menu.types';
 export type { ButtonProps, ButtonStyleOption, ButtonVariant } from './button/types/button.types';
 export { buttonStyles, buttonVariants } from './button/types/button.types';
 export type { HamburgerProps } from './hamburger/hamburger.component';

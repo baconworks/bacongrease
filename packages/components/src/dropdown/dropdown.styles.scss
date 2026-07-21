@@ -1,11 +1,8 @@
-@use 'functions';
 @use 'variables';
 
 // DROPDOWN INTERFACE
 // Note: MarginTop set in component via styleOptions prop
-
-// colors
-$dropdown-background-color: functions.getColor(custom, white);
+// Colors are tokenized so the dropdown follows the host theme (light/dark) rather than a fixed white.
 
 // shadows
 $dropdown-shadow: variables.$shadow-default;
@@ -15,7 +12,8 @@ $dropdown-padding: 1rem;
 
 .dropdown {
   position: absolute;
-  background-color: $dropdown-background-color;
+  background-color: var(--surface);
+  color: var(--foreground);
   box-shadow: $dropdown-shadow;
   padding: $dropdown-padding;
   white-space: nowrap;
@@ -35,7 +33,7 @@ $dropdown-padding: 1rem;
   &_caret {
     position: absolute;
     transform: rotate(45deg);
-    background: white;
+    background: var(--surface);
     box-shadow: $dropdown-shadow;
     height: 12px;
     width: 12px;
@@ -61,7 +59,7 @@ $dropdown-padding: 1rem;
       position: absolute;
       height: 24px;
       width: 12px;
-      background: white;
+      background: var(--surface);
       z-index: 2;
       transform: rotate(45deg);
       top: -3px;
