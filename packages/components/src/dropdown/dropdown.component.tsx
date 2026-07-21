@@ -100,6 +100,26 @@ const Dropdown = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [ open, positionDropdown ]);
 
+  // Reposition after layout settles on open. The target's ResizeObserver misses a shift where the
+  // trigger only MOVES (not resizes) — e.g. a web font swapping in reflows the header and slides the
+  // trigger sideways, so the first-open caret would otherwise point at the pre-swap position. A rAF
+  // (post-layout) and `document.fonts.ready` cover that; the cancelled flag ignores a late resolve
+  // after close.
+  useEffect(() => {
+    if (!open) return;
+
+    let cancelled = false;
+    const reposition = () => { if (!cancelled) positionDropdown(); };
+
+    const frame = requestAnimationFrame(reposition);
+    document.fonts?.ready.then(reposition);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, [ open, positionDropdown ]);
+
   // click outside to close dropdown
   useEffect(() => {
     if (!open) return;
@@ -149,9 +169,10 @@ const Dropdown = ({
       'a[href], button:not(:disabled), input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
-    ( firstFocusable ?? dropdown )?.focus();
+    // preventScroll: opening the menu shouldn't scroll the page to bring the focus target into view.
+    ( firstFocusable ?? dropdown )?.focus({ preventScroll: true });
 
-    return () => trigger?.focus?.();
+    return () => trigger?.focus?.({ preventScroll: true });
   }, [ open, targetRef ]);
 
   return (
