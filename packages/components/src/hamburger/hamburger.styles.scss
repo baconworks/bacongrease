@@ -1,11 +1,9 @@
-@use 'functions';
-@use 'variables';
+// HAMBURGER INTERFACE — colours come from the design tokens (ADR-0003) so the bars follow the
+// theme (they were hardcoded white, invisible on a light surface).
 
-// HAMBURGER INTERFACE
 // colors
-$hamburger-bar-color: functions.getColor(white);
-$hamburger-bar-color-open: functions.getColor(white);
-$hamburger-background-color: functions.getColor(custom, grey);
+$hamburger-bar-color: var(--foreground);
+$hamburger-hover-color: var(--surface-muted);
 
 // sizing
 $hamburger-bar-height: 2px;
@@ -19,93 +17,74 @@ $hamburger-indicator-size: 200%;
 $hamburger-z-index: 1001;
 
 // animations
-$hamburger-opacity-transition: .3s;
-
+$hamburger-transition: .2s ease-in-out;
 
 .hamburger {
   cursor: pointer;
-
-  &:hover > &_background,
-  &:focus > &_background {
-    background-color: $hamburger-background-color;
-  }
-
-  // border
   border: none;
-
-  // color
   background-color: transparent;
+  padding: 0;
 
   // positioning
   position: relative;
   display: grid;
-  grid-auto-rows: $hamburger-bar-height; // row count set dynamically in component style prop
+  grid-auto-rows: $hamburger-bar-height;
   gap: $hamburger-bar-gap;
+  align-content: center;
 
   // sizing
   width: $hamburger-width;
   height: $hamburger-height;
 
-  // spacing
-  padding: 0;
-
-  // stacking order: needs to be above navbar and mobile menu
+  // stacking order: above nav content
   z-index: $hamburger-z-index;
 
-  &--open {
-    padding: none;
+  &:hover > &_background,
+  &:focus > &_background {
+    background-color: $hamburger-hover-color;
   }
 
-  // hover/focus indicator
+  // hover/focus indicator — sits BEHIND the bars (z-index -1), else the positioned pseudo-element
+  // stacks above the in-flow bars and hides them.
   &::before {
     content: '';
     position: absolute;
     left: 50%;
-    top: 35%;
+    top: 50%;
+    z-index: -1;
     width: $hamburger-indicator-size;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     opacity: 0;
     transform: translate(-50%, -50%);
-    transition: opacity $hamburger-opacity-transition ease-in-out
+    transition: opacity $hamburger-transition;
   }
 
-  // indicator appears on hover and focus
   &:hover::before,
   &:focus-within::before {
-    background-color: functions.getColor(custom, grey);
+    background-color: $hamburger-hover-color;
     opacity: 1;
   }
 
-  // HAMBURGER BAR STYLES
+  // HAMBURGER BARS — morph to an X when open
   &_bar {
     height: $hamburger-bar-height;
     width: $hamburger-bar-width;
     background-color: $hamburger-bar-color;
-    transform: rotate(0) translate(0);
+    transform-origin: center;
     opacity: 1;
-    transition: all 0.0s ease-in-out;
+    transition:
+      transform $hamburger-transition,
+      opacity $hamburger-transition;
 
-    &--open {
-      width: 100%;
-      height: 100%;
-      background-color: $hamburger-bar-color-open;
-    }
+    // bars sit at y = 0 / 5 / 10 (height 2 + gap 3); collapse to the centre (y=6) and cross.
+    &--open:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+    &--open:nth-child(2) { opacity: 0; }
+    &--open:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+  }
 
-    &--open:nth-child(1) {
-      transform: rotate(0) translateY(0) translateX(0);
-      scale: 100%;
-    }
-
-    &--open:nth-child(2) {
-      transform: rotate(0);
-      scale: 100%;
-      opacity: 1;
-    }
-
-    &--open:nth-child(3) {
-      transform: rotate(-0) translateY(-0) translateX(0);
-      scale: 100%;
-    }
+  @media (prefers-reduced-motion: reduce) {
+    &_bar,
+    &::before { transition: none; }
   }
 }

@@ -300,11 +300,24 @@ both green, committed on `main`):
    tarballs, but we have NOT yet consumed the built packages back into a real
    app. That's the true end-to-end test — do it next (either `yarn add` the
    packed tarballs, or a `link:`/`portal:` dep, into `../ac-booking`).
-2. **Migrate the remaining components to tokens** (audit-on-intake). Button's solid
-   primary is done; secondary/tertiary/greyscale/outline/gradient/text and the other
-   components (dropdown, modal, sidenav, …) still read raw `getColor()`, so they don't
-   theme yet. Migrate each as it's pulled into a consuming app — reworking `color.scale`
-   hovers to `color-mix` (SCSS color functions can't touch a CSS variable).
+2. **Migrate the remaining components to tokens** (audit-on-intake). **Done: Button** (solid
+   primary), **Sidenav + Hamburger** (tokenized + reworked — see below). Still on raw `getColor()`:
+   the other Button variants and dropdown / modal / side-drop / link / spinner / icon. Migrate each
+   as it's pulled into a consuming app — reworking `color.scale` hovers to `color-mix` (SCSS colour
+   functions can't touch a CSS variable).
+   - **Sidenav** (brought in for `sales-platform/web`): tokenized (themes + subtree `data-theme`);
+     accepts a **flat list OR `sections`** (grouping/role-gating is the app's job, not the nav's);
+     **hamburger-pin** interaction (no hover-expand) with a `toggle` prop — `'none'` (static, default)
+     / `'x'` (morph to ✕) / `'chevron'`; adjustable geometry via CSS vars (`--sidenav-collapsed-width`
+     / `-expanded-width` / `--sidenav-icon-size`, defaulting to the accessible 48px min rail); no
+     longer hardcodes its grid placement (the host grid positions it). The **action slot was removed**
+     (deferred — it belongs as a nav-item CTA, not the general Button; revisit when a real "+New" lands).
+   - **Hamburger** audit fixes: tokenized bars (were invisible white), `type="button"`, real ☰↔✕ morph
+     (was a no-op), `padding: none`→`0`, dropped an invalid `grid-auto-rows: repeat()`, indicator sits
+     behind the bars. **`Icon`** has a latent bug (its `.icon` span is unsized so the SVG fills its box —
+     the size prop is overridden by `width/height: 100%`); worked around per-consumer, fix on its intake.
+   - **Scoped theming:** the token `[data-theme]` overrides now target ANY element (not just `:root`),
+     so a subtree can be pinned to a theme (e.g. a persistently-dark sidebar in a light app).
 3. **Regenerate the system-color ramps in Leonardo** against real WCAG contrast targets
    — the current ones are even OKLCH seeds, not contrast-verified.
 4. **Port tests.** The source app has Vitest + Testing Library tests for these

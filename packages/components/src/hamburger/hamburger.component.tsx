@@ -14,12 +14,13 @@ export interface HamburgerProps extends ComponentPropsWithoutRef<'button'> {
   open?: boolean;
 };
 
-const Hamburger: FC<HamburgerProps> = ({ bars = 3, open = false, ...buttonProps }) => {
+const Hamburger: FC<HamburgerProps> = ({ bars = 3, open = false, type = 'button', ...buttonProps }) => {
   // create an iterable array from bar count
   const hamburgerBars = Array.from(Array(bars));
 
   return (
     <button
+      type={ type }
       className={
         cleanClasses(
           'hamburger',
@@ -27,7 +28,6 @@ const Hamburger: FC<HamburgerProps> = ({ bars = 3, open = false, ...buttonProps 
         )
       }
       title={ 'Expand/collapse the navigation menu' }
-      style={{ gridAutoRows: `repeat(${ bars }, auto)` }}
       { ...buttonProps }
     >
       { hamburgerBars.map(( _, index ) =>

@@ -199,8 +199,10 @@
 }
 
 // --- Emit ---------------------------------------------------------------------------------------
-// Default is LIGHT at :root. Dark applies when the OS asks (unless the app has pinned light), and an
-// explicit [data-theme] on the root always wins — so an app can offer a manual light/dark switch.
+// Default is LIGHT at :root. Dark applies when the OS asks (unless the root has pinned light). An
+// explicit [data-theme] wins — and because it targets ANY element (not just :root), a subtree can be
+// pinned to a theme independent of the page (e.g. a persistently-dark sidebar in a light app): the
+// re-declared tokens inherit into that subtree only.
 :root {
   @include emit-color-primitives;
   @include emit-scales;
@@ -213,10 +215,10 @@
   }
 }
 
-:root[data-theme='dark'] {
+[data-theme='dark'] {
   @include theme-dark;
 }
 
-:root[data-theme='light'] {
+[data-theme='light'] {
   @include theme-light;
 }

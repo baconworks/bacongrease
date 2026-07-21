@@ -3,12 +3,11 @@
 import type {
   ComponentPropsWithoutRef,
   ElementType,
-  ReactElement,
-  ReactNode
+  ReactElement
 } from 'react';
 
 // hooks
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 // components
 import Hamburger from '../hamburger/hamburger.component';
@@ -30,13 +29,21 @@ export type SideNavLinkData = {
   active?: boolean;
 };
 
+export type SideNavSection = {
+  /** Optional group heading, shown when the nav is expanded. */
+  label?: string;
+  links: SideNavLinkData[];
+};
+
 export interface SideNavProps extends ComponentPropsWithoutRef<'nav'> {
-  linksData: SideNavLinkData[];
+  /** Flat list of links — the simple case. Ignored when `sections` is given. */
+  linksData?: SideNavLinkData[];
   /**
-   * Optional slot rendered above the nav links — e.g. a compose/new action
-   * button. The host app owns whatever goes here.
+   * Grouped links, each with an optional heading. The component only renders
+   * what it's handed — deciding which links/sections a user may see (role or
+   * plan gating) is the host app's job, not the nav's.
    */
-  action?: ReactNode;
+  sections?: SideNavSection[];
   /**
    * Current pathname. When provided, each link's active state is computed
    * automatically: exact match for '/', `startsWith` for everything else.
@@ -48,37 +55,34 @@ export interface SideNavProps extends ComponentPropsWithoutRef<'nav'> {
    * Next.js `Link`) so navigation stays client-side.
    */
   linkAs?: ElementType;
+  /**
+   * The expand/collapse control at the top of the nav:
+   * - `'none'` — a plain static hamburger that toggles the nav, no morph (default)
+   * - `'x'` — a hamburger that morphs to an ✕ when expanded
+   * - `'chevron'` — a standalone chevron that flips direction (points in to collapse, out to expand)
+   */
+  toggle?: 'x' | 'chevron' | 'none';
 };
 
 const Sidenav = ({
-  action,
   className,
   linksData,
+  sections,
   linkAs,
   pathname,
+  toggle = 'none',
   ...navProps
 }: SideNavProps) => {
-  // handle expand and collapse state
-  const [ open, setOpen ] = useState(false);
-  const [ collapsed, setCollapsed ] = useState(true);
+  // The toggle pins the expanded/collapsed state (no hover-to-expand: it mis-fires and reflows
+  // content — a pinned toggle is deliberate).
+  const [ expanded, setExpanded ] = useState(false);
+  const toggleExpanded = () => setExpanded(( prev ) => !prev);
 
-  const toggleOpen = () => {
-    if (open) {
-      setOpen(false);
-      setCollapsed(true);
-    } else {
-      setOpen(true);
-      setCollapsed(false);
-    }
-  };
+  // id for the links region so the hamburger's aria-controls points at a real element.
+  const linksId = useId();
 
-  const handleMouseEnter = () => {
-    setCollapsed(false);
-  };
-
-  const handleMouseLeave = () => {
-    if (!open) setCollapsed(true);
-  };
+  // Normalise whatever we're handed into sections; a flat list is one unlabelled section.
+  const groups: SideNavSection[] = sections ?? [ { links: linksData ?? [] } ];
 
   // resolve a link's active state: explicit override first, then pathname match
   const resolveActive = ( link: SideNavLinkData ) => {
@@ -98,54 +102,72 @@ const Sidenav = ({
           'sidenav',
           {
             classes: className,
-            modifiers: [ `${ open || !collapsed ? 'expanded' : 'collapsed' }` ]
+            modifiers: [ expanded ? 'expanded' : 'collapsed' ]
           }
         )
       }
     >
-      {/* hamburger toggles collapsed/expanded state */}
-      <Hamburger
-        onClick={ toggleOpen }
-        aria-expanded={ open }
-        aria-controls='Sidebar navigation'
-        aria-label='Toggle sidebar navigation menu'
-      />
-
-      { action &&
-          <div
+      {/* the expand/collapse control — a chevron, or a hamburger (morphing to an ✕ when 'x') */}
+      { toggle === 'chevron' ?
+          <button
+            type='button'
             className={
               cleanClasses(
-                'sidenav_action',
-                { modifiers: [ collapsed ? 'collapsed' : 'expanded' ] }
+                'sidenav_toggle',
+                { modifiers: [ expanded ? 'expanded' : 'collapsed' ] }
               )
             }
+            onClick={ toggleExpanded }
+            aria-expanded={ expanded }
+            aria-controls={ linksId }
+            aria-label='Toggle sidebar navigation menu'
+            title='Expand/collapse the navigation menu'
           >
-            { action }
-          </div>
+            <span className='sidenav_chevron' aria-hidden='true' />
+          </button> :
+          <Hamburger
+            open={ toggle === 'x' && expanded }
+            onClick={ toggleExpanded }
+            aria-expanded={ expanded }
+            aria-controls={ linksId }
+            aria-label='Toggle sidebar navigation menu'
+          />
       }
 
-      <ul className={ cleanClasses('sidenav_nav-links-ul') }>
+      <div className='sidenav_sections' id={ linksId }>
         {
-          linksData.map(( linkData, index ) =>
-            <li
-              key={ index }
-              className={ cleanClasses('sidenav_nav-links-li') }
-              onMouseEnter={ handleMouseEnter }
-              onMouseLeave={ handleMouseLeave }
+          groups.map(( section, sectionIndex ) =>
+            <div
+              className='sidenav_section'
+              key={ section.label ?? sectionIndex }
             >
-              <Link
-                href={ linkData.href }
-                text={ linkData.text }
-                title={ linkData.title }
-                as={ linkAs }
-                active={ resolveActive(linkData) }
-                className={ cleanClasses('sidenav_nav-link') }
-                icon={ linkData.icon }
-              />
-            </li>
+              { section.label &&
+                  <span className='sidenav_section-label'>{ section.label }</span>
+              }
+              <ul className='sidenav_nav-links-ul'>
+                {
+                  section.links.map(( linkData ) =>
+                    <li
+                      key={ linkData.href }
+                      className='sidenav_nav-links-li'
+                    >
+                      <Link
+                        href={ linkData.href }
+                        text={ linkData.text }
+                        title={ linkData.title }
+                        as={ linkAs }
+                        active={ resolveActive(linkData) }
+                        className='sidenav_nav-link'
+                        icon={ linkData.icon }
+                      />
+                    </li>
+                  )
+                }
+              </ul>
+            </div>
           )
         }
-      </ul>
+      </div>
     </nav>
   )
 };

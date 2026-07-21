@@ -1,10 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { FaHome, FaFolder, FaUsers, FaCog } from 'react-icons/fa';
+import { FaHome, FaFolder, FaUsers, FaCog, FaChartBar, FaTag } from 'react-icons/fa';
 
 import Sidenav from './sidenav.component';
 import Icon from '../icon/icon.component';
-import Button from '../button/button.component';
-import { ButtonVariants } from '../button/types/button.types';
 
 const meta = {
   title: 'Primitives/Sidenav',
@@ -12,9 +10,9 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   decorators: [
     ( Story ) => (
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', height: '100vh' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gridTemplateRows: '1fr', height: '100vh', overflow: 'hidden' }}>
         <Story />
-        <main style={{ padding: '2rem' }}>Hover or toggle the nav on the left.</main>
+        <main style={{ padding: '2rem' }}>Toggle the nav with the hamburger on the left.</main>
       </div>
     ),
   ],
@@ -30,6 +28,25 @@ const linksData = [
   { href: '/settings', text: 'settings', title: 'Settings', icon: <Icon icon={ FaCog } size={ 22 } /> },
 ];
 
+// Grouped sections — the host app decides membership (role/plan gating); the nav just renders.
+const sections = [
+  { links: [ { href: '/', text: 'home', title: 'Home', icon: <Icon icon={ FaHome } size={ 22 } /> } ] },
+  {
+    label: 'Work',
+    links: [
+      { href: '/projects', text: 'projects', title: 'Projects', icon: <Icon icon={ FaFolder } size={ 22 } /> },
+      { href: '/clients', text: 'clients', title: 'Clients', icon: <Icon icon={ FaUsers } size={ 22 } /> },
+    ],
+  },
+  {
+    label: 'Insights',
+    links: [
+      { href: '/reports', text: 'reports', title: 'Reports', icon: <Icon icon={ FaChartBar } size={ 22 } /> },
+      { href: '/tags', text: 'tags', title: 'Tags', icon: <Icon icon={ FaTag } size={ 22 } /> },
+    ],
+  },
+];
+
 export const Default: Story = {
   args: {
     linksData,
@@ -37,10 +54,17 @@ export const Default: Story = {
   },
 };
 
-export const WithActionSlot: Story = {
+export const Grouped: Story = {
   args: {
-    linksData,
-    pathname: '/',
-    action: <Button label="New" variant={ ButtonVariants.tertiary } styleOptions={ [ 'pill' ] } />,
+    sections,
+    pathname: '/projects',
+  },
+};
+
+export const ChevronToggle: Story = {
+  args: {
+    sections,
+    pathname: '/projects',
+    toggle: 'chevron',
   },
 };

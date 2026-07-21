@@ -1,60 +1,81 @@
-@use 'functions';
-@use 'variables';
 @use '../hamburger/hamburger.styles';
 
-// SIDENAV INTERFACE
-// colors
-$sidenav-background-color: functions.getColor(greyscale, 700);
-$sidenav-font-color: functions.getColor(white);
-$sidenav-link-active-color: functions.getColor(custom, light-blue);
-$sidenav-link-hover-color: functions.getColor(custom, grey);
+// SIDENAV INTERFACE — colours come from the design tokens (ADR-0003), so the nav follows the
+// theme and any app override. Background sits on --surface (one hairline off the content --bg);
+// the active/hover indicator is an accent/neutral tint rather than a solid fill, so text stays
+// legible in both themes.
 
 // spacing
 $sidenav-hamburger-vertical-spacing: 2rem;
 $sidenav-links-vertical-padding: 1rem;
 
 // sizing
-$sidenav-menu-height: auto;
-$sidenav-icon-size: 2.5rem;
 $sidenav-indicator-collapsed-size: 3.6rem;
 $sidenav-indicator-expanded-width: 90%;
-$sidenav-indicator-expanded-height: 90%;
 
 // animations
 $sidenav-opacity-transition: .2s;
 $sidenav-width-transition: .4s;
 
 .sidenav {
-  // position self
-  grid-row: 1 / -1;
-  position: relative;
+  // Adjustable geometry — override these on the host to widen the rail or scale the icons. Defaults
+  // sit at the ACCESSIBLE minimum: a 4.8rem (48px) collapsed rail is still a full 48px touch target
+  // (WCAG/Material min), and the icon is half that (balanced gutters). Best-practice ranges:
+  // collapsed 48–64px, expanded 240–300px.
+  --sidenav-collapsed-width: 4.8rem;
+  --sidenav-expanded-width: 24rem;
+  --sidenav-icon-size: 2.4rem;
 
-  // COLORS
-  background-color: $sidenav-background-color;
-  color: $sidenav-font-color;
+  // Placement in the app grid is the host's job (a full-height column `1 / -1`, or under a
+  // header `2 / -1`) — the component does not assume its own row. It only owns the INTERNAL
+  // grid (hamburger / action / sections) declared below, and fills whatever cell it's given.
+  position: relative;
+  height: 100%;
+
+  // Pin the rail width per state (rather than letting content drive it) so the collapsed rail is
+  // exactly the icon column and everything centres on one axis; it animates between the two.
+  width: var(--sidenav-collapsed-width);
+  transition: width $sidenav-width-transition ease-in-out;
+
+  &--expanded {
+    width: var(--sidenav-expanded-width);
+  }
+
+  // COLORS (tokens)
+  background-color: var(--surface);
+  color: var(--foreground);
+  border-right: 1px solid var(--border);
 
   // LAYOUT
   display: grid;
-
-  // set the heights for sidenav items
   grid-template-rows:
-  // hamburger cell is twice the height of the hamburger to account for
-  // the background size (200%) and then add the vertical spacing above
-  calc(
-    hamburger.$hamburger-height * 2 + $sidenav-hamburger-vertical-spacing
-  )
-  // action slot
-  min-content
-  // link menu
-  $sidenav-menu-height
-  // fill remaining space at bottom
-  1fr;
+    // hamburger cell (twice the hamburger height for its 200% background, plus the top spacing)
+    calc(hamburger.$hamburger-height * 2 + $sidenav-hamburger-vertical-spacing)
+    // sections fill + scroll
+    1fr;
 
-  // STATE MANAGEMENT
+  // STATE — link text reveals on expand
   .link_text {
     transition:
       width $sidenav-width-transition ease-in-out,
       opacity $sidenav-width-transition ease-in-out;
+  }
+
+  // Clip the link text so its `width: 0` when collapsed is truly zero — without this its content
+  // leaks a min-content width into the link's 1fr track, widening the rail past the icon column and
+  // shoving the icons off the collapsed centre axis.
+  .link_text {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link_text,
+    &_section-label,
+    &_section-label::after,
+    &_nav-link::before {
+      transition: none;
+    }
   }
 
   &--collapsed .link_text {
@@ -65,38 +86,78 @@ $sidenav-width-transition: .4s;
 
   &--expanded .link_text {
     z-index: 1;
-    width: variables.$sidenav-expanded - variables.$sidenav-collapsed;
+    width: calc(var(--sidenav-expanded-width) - var(--sidenav-collapsed-width));
     opacity: 1;
-  }
-
-  &--collapsed &_nav-links-ul {
-    justify-content: center;
   }
 
   &--expanded &_nav-link {
     width: 100%;
     display: grid;
-    grid-template-columns: variables.$sidenav-collapsed 1fr;
+    grid-template-columns: var(--sidenav-collapsed-width) 1fr;
     z-index: 100;
   }
 
-  &--collapsed &_action {
-    justify-self: center;
+
+  // SECTIONS — min-height: 0 lets this grid item shrink below its content so overflow-y actually
+  // scrolls (without it the 1fr row grows past the viewport and the overflow is clipped, not scrolled).
+  &_sections {
+    grid-row: 2;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-top: 0.8rem;
   }
 
-  &--expanded &_action {
-    margin-left: 1rem;
-    display: grid;
-    grid-template-columns: min-content 1fr;
+  // Group label. Its height is RESERVED in both states, so revealing the text on expand causes no
+  // layout shift (the icons never move). Left-aligned as a header, not indented to the text column.
+  &_section-label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    padding: 0 0 0 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    transition: color $sidenav-width-transition ease-in-out;
   }
 
-  // LINK AND INDICATOR CONFIGURATION
+  // A hairline that stands in for the label when collapsed (the text can't fit the narrow rail) —
+  // occupies the SAME reserved space (centred in it), so the group boundary reads in both states
+  // with no layout shift.
+  &_section-label::after {
+    content: '';
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    top: 50%;
+    height: 1px;
+    background: var(--border);
+    opacity: 0;
+    transition: opacity $sidenav-width-transition ease-in-out;
+  }
+
+  &--collapsed &_section-label {
+    color: transparent;
+  }
+
+  &--collapsed &_section-label::after {
+    opacity: 1;
+  }
+
+  // LINK + INDICATOR
   &_nav-link {
     position: relative;
     display: grid;
-    grid-template-columns: variables.$sidenav-collapsed 1fr;
+    grid-template-columns: var(--sidenav-collapsed-width) 1fr;
     align-items: center;
-    text-transform: capitalize;
     width: 100%;
     height: 100%;
     padding-top: $sidenav-links-vertical-padding;
@@ -108,15 +169,10 @@ $sidenav-width-transition: .4s;
       position: absolute;
       left: 0;
       top: 50%;
-
-      // indicator is a circle
       width: $sidenav-indicator-collapsed-size;
       height: $sidenav-indicator-collapsed-size;
       border-radius: 50%;
-
-      // hide while not hover/focus/active
       opacity: 0;
-
       transform: translateY(-50%);
       transition:
         border-radius $sidenav-width-transition ease-in-out,
@@ -128,28 +184,32 @@ $sidenav-width-transition: .4s;
     // center the indicator behind the icon on collapse
     .sidenav--collapsed &::before {
       width: $sidenav-indicator-collapsed-size;
-      left: calc((variables.$sidenav-collapsed - $sidenav-indicator-collapsed-size) /2);
+      left: calc((var(--sidenav-collapsed-width) - #{$sidenav-indicator-collapsed-size}) / 2);
       transform: translateY(-50%);
     }
 
-    // indicator takes up full width on expansion
+    // indicator becomes a right-rounded pill on expansion
     .sidenav--expanded &::before {
       width: $sidenav-indicator-expanded-width;
       border-radius: 0 2rem 2rem 0;
       left: 0;
-      // centers indicator if height != 100%
       transform: translateY(-50%);
     }
 
-    // indicator appears on hover, focus and active state
+    // hover / focus — subtle neutral tint
     &:hover::before,
     &:focus-within::before {
-      background-color: $sidenav-link-hover-color;
+      background-color: var(--surface-muted);
       opacity: 1;
     }
 
+    // active — accent tint behind accent-coloured text/icon
+    &.link--active {
+      color: var(--accent);
+    }
+
     &.link--active::before {
-      background-color: $sidenav-link-active-color;
+      background-color: color-mix(in oklch, var(--accent) 14%, transparent);
       opacity: 1;
     }
   }
@@ -166,17 +226,59 @@ $sidenav-width-transition: .4s;
     width: 100%;
   }
 
-  // ICON SIZING / POSITIONING
-  &_link-icon {
+  // ICON SIZING — the Link renders a bacongrease <Icon> (a `.icon` span whose SVG fills it), so
+  // size that span; without this the SVG expands to fill the whole icon column.
+  &_nav-link .icon {
     justify-self: center;
-    width: $sidenav-icon-size;
-    height: $sidenav-icon-size;
+    width: var(--sidenav-icon-size);
+    height: var(--sidenav-icon-size);
   }
 
-  // ensures hamburger doesn't shift when collapsed state changes
-  > .hamburger {
+  // Pin the toggle control (hamburger or chevron) to the COLLAPSED rail's centre axis (not the
+  // sidenav's centre, which moves as it expands) so it stays put on expand — the icons stay put too
+  // because their grid column is fixed at the collapsed width.
+  > .hamburger,
+  > .sidenav_toggle {
+    position: relative;
     top: $sidenav-hamburger-vertical-spacing;
-    left: calc(variables.$sidenav-collapsed / 2);
+    left: calc(var(--sidenav-collapsed-width) / 2);
     transform: translateX(-50%);
+  }
+
+  // chevron toggle button
+  &_toggle {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--surface-muted);
+    }
+  }
+
+  // the CSS chevron mark — points out (collapsed → expand) and flips to point in (expanded → collapse)
+  &_chevron {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateX(-15%) rotate(-45deg);
+    transition: transform $sidenav-width-transition ease-in-out;
+  }
+
+  &--expanded &_chevron {
+    transform: translateX(15%) rotate(135deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &_chevron { transition: none; }
   }
 }
