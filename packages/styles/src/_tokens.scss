@@ -167,6 +167,7 @@
   --border: rgba(0, 0, 0, 0.12);
 
   --accent: var(--color-primary);
+  --accent-hover: var(--color-primary-300);
   --accent-contrast: var(--color-white);
   --danger: var(--color-danger);
   --success: var(--color-success);
@@ -187,6 +188,7 @@
   --border: rgba(255, 255, 255, 0.15);
 
   --accent: var(--color-primary-200);
+  --accent-hover: var(--color-primary-100);
   --accent-contrast: var(--color-greyscale-1100);
   // status colours lift to a lighter shade so they read on the dark surface
   --danger: var(--color-danger-300);

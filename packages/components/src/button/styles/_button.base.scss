@@ -44,11 +44,13 @@
   &--primary {
     color: var(--accent-contrast);
     background-color: var(--accent);
-    transition: background-color var(--duration-base) var(--ease-standard),
-                color var(--duration-base) var(--ease-standard);
+    // LITERAL timing (like the other variants), not var() tokens: a var() timing value in this
+    // transition doesn't apply here and the hover snapped. The hover COLOUR stays a token
+    // (--accent-hover, a resolved palette shade — color-mix targets don't animate in a transition).
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
 
     &:hover:not(:disabled) {
-      background-color: color-mix(in oklch, var(--accent) 80%, white);
+      background-color: var(--accent-hover);
     }
   }
 

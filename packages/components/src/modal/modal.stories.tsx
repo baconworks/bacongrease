@@ -3,7 +3,6 @@ import { useState } from 'react';
 
 import Modal from './modal.component';
 import Button from '../button/button.component';
-import { ButtonVariants } from '../button/types/button.types';
 
 const meta = {
   title: 'Primitives/Modal',
@@ -36,7 +35,7 @@ export const Default: Story = {
           >
             <h2>Modal title</h2>
             <p>Click the backdrop or press Escape to close.</p>
-            <Button label="Close" variant={ ButtonVariants.secondary } onClick={ () => setOpen(false) } />
+            <Button label="Close" variant="secondary" onClick={ () => setOpen(false) } />
           </div>
         </Modal>
       </div>

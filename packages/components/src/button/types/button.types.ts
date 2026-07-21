@@ -25,21 +25,24 @@ export interface ButtonProps extends ComponentPropsWithRef<'button'> {
   /**
    * Determines the color variant of the button.
    */
-  variant?: ButtonVariants;
+  variant?: ButtonVariant;
 };
 
 /**
-  * Variants set the color and gradient for the button and map to
-  * SCSS class modifiers in the button stylesheet
+  * Variants set the color and gradient for the button and map to SCSS class modifiers in the button
+  * stylesheet. A string-literal union (not an enum) so a consumer just writes `variant="primary"` —
+  * no second import. `buttonVariants` is the runtime list (for iterating, e.g. Storybook controls).
 */
-export enum ButtonVariants {
-  primary = 'primary',
-  secondary = 'secondary',
-  tertiary = 'tertiary',
-  greyscale = 'greyscale',
-  microsoftDark = 'microsoft-dark',
-  microsoftLight = 'microsoft-light'
-};
+export const buttonVariants = [
+  'primary',
+  'secondary',
+  'tertiary',
+  'greyscale',
+  'microsoft-dark',
+  'microsoft-light',
+] as const;
+
+export type ButtonVariant = typeof buttonVariants[number];
 
 export const buttonStyles = [
   'circle',
