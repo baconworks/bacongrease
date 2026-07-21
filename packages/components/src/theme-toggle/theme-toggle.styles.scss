@@ -1,0 +1,17 @@
+// A round icon button. Fully tokenized so it inherits whatever theme the host app defines.
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-standard);
+
+  &:hover {
+    background: var(--surface-muted);
+  }
+}

@@ -145,12 +145,9 @@ const Dropdown = ({
       <div
         className={
           cleanClasses(
-          'dropdown_caret',
-          {
-            modifiers: [ variant === 'down' ? 'down' : 'up' ],
-            classes: className
-          }
-        )
+            'dropdown_caret',
+            { modifiers: [ variant === 'down' ? 'down' : 'up' ] }
+          )
         }
       />
       { children }

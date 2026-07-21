@@ -8,7 +8,7 @@ Pulled out of the `ac-booking` app and decoupled from it. Two packages:
 | Package | What |
 | --- | --- |
 | [`@bacongrease/styles`](./packages/styles) | SCSS design system: color-family map, gradient functions, mixins, tokens, reset, utilities. Modern `@use`/`@forward` modules. |
-| [`@bacongrease/components`](./packages/components) | React primitives: Button, Icon, LinearGradient, Spinner, Hamburger, Modal, Dropdown, SideDrop, Link, Sidenav. BEM class names, styled with the design system. |
+| [`@bacongrease/components`](./packages/components) | React primitives: Button, Icon, LinearGradient, Spinner, Hamburger, Modal, Dropdown, SideDrop, Link, Sidenav, Header, AccountMenu, ThemeToggle. BEM class names, styled with the design system. |
 
 ## Getting started
 

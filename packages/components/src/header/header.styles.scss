@@ -1,0 +1,59 @@
+// One row, three tracks: branding (sizes to content) | search (grows, fills the middle) | actions
+// (sizes to content, pinned right by the middle track). Each region is placed on an explicit column
+// so it lands correctly whether or not the others are present; the empty 1fr keeps actions right
+// even with no search.
+.header {
+  // Bar height is a token so a host app can set its own density; the account avatar tracks it.
+  --header-height: 5.6rem;
+
+  // The positioning context for slotted dropdowns (account menu, tools). Its full-bar width is what
+  // the Dropdown clamps against to stay in view, and it anchors the dropdown just below the bar.
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: var(--space-4);
+  height: var(--header-height);
+  padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+
+  &_branding {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    letter-spacing: -0.01em;
+  }
+
+  &_search {
+    grid-column: 2;
+    justify-self: center; // centered within the middle track rather than hugging the branding
+    width: min(44rem, 100%);
+    min-width: 0; // let the search shrink instead of forcing the bar wider
+  }
+
+  &_actions {
+    grid-column: 3;
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    column-gap: var(--space-3);
+  }
+
+  // Scale the account avatar to the bar height (~64%), so both move together when the bar resizes.
+  &_account {
+    --account-avatar-size: calc(var(--header-height) * 0.64);
+    display: flex;
+    align-items: center;
+  }
+
+  &_tools {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    column-gap: var(--space-2);
+  }
+}
