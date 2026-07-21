@@ -28,7 +28,19 @@ primitives — button, dropdown, hamburger, icon, linear-gradient, link, modal, 
 spinner, plus the `cleanClasses` util). Storybook is the dev/dogfooding environment. Extracted from
 the ac-booking app; being generically re-proven.
 
-**Latest — Header + AccountMenu + ThemeToggle** (the app's top bar, for `sales-platform/web`). Three
+**Latest — Dropdown keyboard a11y + theme anti-flash helper** (follow-ups to the header slice):
+- **`Dropdown` a11y** — **Escape closes** it (a keyboard/SR user could only click away before), and
+  **focus is managed**: on open, focus moves into the dropdown (first focusable child, else the
+  container via `tabIndex=-1`); on close, focus returns to the trigger. Meets the WCAG-AA keyboard
+  requirement for the account menu.
+- **`themeInitScript( storageKey )`** — a server-safe helper returning the inline `<head>` script
+  that stamps `data-theme` from the persisted choice **before first paint**, killing the theme flash
+  (FOUC). Mirrors `ThemeToggle`'s mount rule (stamp only on an explicit stored choice) so they can't
+  drift. It MUST be a synchronous inline script — a `useEffect` runs after paint (that's the flash);
+  this is the pattern next-themes / Chakra `ColorModeScript` / Theme UI ship (ref: Josh Comeau, "The
+  Perils of Rehydration"). Consumed by `web/`'s root-html shell.
+
+**Recent — Header + AccountMenu + ThemeToggle** (the app's top bar, for `sales-platform/web`). Three
 new primitives, composed like the Sidenav (generic here, app-wrapped there):
 - **`Header`** — a pure-layout `<header>` frame (grid: branding | search | actions), all four slots
   optional (`branding` / `search` / `tools` / `account`); search absent = off. Knows nothing about
