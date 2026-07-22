@@ -1,6 +1,6 @@
 ---
 status: active
-date: 2026-07-21
+date: 2026-07-22
 tags: [meta, handoff]
 ---
 
@@ -28,7 +28,15 @@ primitives — button, dropdown, hamburger, icon, linear-gradient, link, modal, 
 spinner, plus the `cleanClasses` util). Storybook is the dev/dogfooding environment. Extracted from
 the ac-booking app; being generically re-proven.
 
-**Latest — Dropdown keyboard a11y + theme anti-flash helper** (follow-ups to the header slice):
+**Latest — `Link` audit fix** (ADR-0004; driven by `sales-platform/web` dogfooding it for real
+navigation). Kept `Link` polymorphic (`as` swaps in Next.js/React Router) and fixed its contract:
+**consumer `aria-label` now wins** (a same-frame link previously had its `aria-label` clobbered with
+`undefined`; the "opens in a new tab" phrasing is now only a fallback), **`ref` is forwarded**
+(`ComponentPropsWithRef`, per our React-19 convention — it wasn't before), **`title` is optional** (was
+required, forcing redundant tooltips on self-describing links), and `target="_self"` is no longer
+emitted. Backward-compatible (title widening). `web/` consumes it via `<Link as={ NextLink } … >`.
+
+**Earlier — Dropdown keyboard a11y + theme anti-flash helper** (follow-ups to the header slice):
 - **`Dropdown` a11y** — **Escape closes** it (a keyboard/SR user could only click away before), and
   **focus is managed**: on open, focus moves into the dropdown (first focusable child, else the
   container via `tabIndex=-1`); on close, focus returns to the trigger. Meets the WCAG-AA keyboard

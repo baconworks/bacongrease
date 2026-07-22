@@ -81,3 +81,11 @@ tags: [decision]
   `[data-theme]`, to get runtime theming and per-layer overrides, accepting more
   indirection than `getColor()`, seed system-colour ramps that still need Leonardo
   contrast verification, and an incremental per-component migration to the tokens.
+- [`0004`](./0004-link-polymorphic-a11y-contract.md) — In the context of `Link`'s first
+  real consumer (`sales-platform/web`), facing an audit that found a consumer `aria-label`
+  silently dropped on same-frame links, no `ref` forwarding (against our own React-19
+  convention), and a required `title` forcing redundant tooltips, we chose to keep `Link`
+  **polymorphic (`as`)** and fix the contract — **consumer `aria-label` wins** (the
+  target-change label is only a fallback), **forward `ref`** (`ComponentPropsWithRef`), make
+  **`title` optional**, and stop emitting `target="_self"` — to make it correct and
+  dogfoodable, accepting only a backward-compatible widening of `title`.
