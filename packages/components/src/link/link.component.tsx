@@ -1,6 +1,6 @@
 // types
 import type {
-  ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
   ElementType,
   ReactElement,
   ReactNode
@@ -12,12 +12,12 @@ import { cleanClasses } from '../utils/clean-classes';
 // styles
 import './link.styles.scss';
 
-export interface LinkProps extends Omit<ComponentPropsWithoutRef<'a'>, 'href'> {
+export interface LinkProps extends Omit<ComponentPropsWithRef<'a'>, 'href'> {
   /**
    * The element or component to render as the underlying link. Defaults to a
    * native anchor (`'a'`). Pass a framework link component (e.g. the Next.js
    * `Link` or a React Router `Link`) to integrate with client-side routing —
-   * the `href` and remaining props are forwarded to it.
+   * the `href`, `ref`, and remaining props are forwarded to it.
    */
   as?: ElementType;
   /** Destination. Forwarded to the underlying element/component. */
@@ -35,19 +35,19 @@ export interface LinkProps extends Omit<ComponentPropsWithoutRef<'a'>, 'href'> {
   /** Optional link text. Will be overridden by any children passed to the link. */
   text?: string;
   /**
-   * Optional string that passes to the title of the underlying anchor element
-   * and displays as a tooltip to the user hovering the link.
-   *
-   * For accessibility, it should helpfully indicate to the user where the link
-   * will take them.
-  */
-  title: string;
+   * Optional tooltip (native `title`) for the underlying anchor. Use it when the
+   * link's visible text doesn't fully say where it goes; leave it off when the
+   * text is already self-describing, so screen readers and hover tooltips aren't
+   * given a redundant label.
+   */
+  title?: string;
 };
 
 /**
  * A framework-agnostic link. Renders a native anchor by default and adds a
  * meaningful `aria-label` when the link opens somewhere other than the current
- * frame. Pass `as` to swap in a router-aware link component.
+ * frame — unless the consumer supplies their own, which always wins. Pass `as`
+ * to swap in a router-aware link component; `ref` is forwarded to it.
  */
 const Link = ({
   as: Component = 'a',
@@ -55,34 +55,38 @@ const Link = ({
   children,
   className,
   icon,
+  ref,
   text,
   title,
   target = '_self',
+  'aria-label': ariaLabelProp,
   ...linkProps
 }: LinkProps) => {
-  // sets a meaningful aria-label to the link when a target destination other
-  // than '_self' is set. Informs users of screen-readers of this behavior.
-  let ariaLabel: string | undefined;
+  // A fallback aria-label announcing that the link opens somewhere other than the
+  // current frame, so screen-reader users are told about the change. Only used
+  // when the consumer hasn't given an explicit aria-label.
+  let targetAriaLabel: string | undefined;
 
   switch (target) {
     case '_blank':
-      ariaLabel = `${ title } opens in a new tab`;
+      targetAriaLabel = title ? `${ title } opens in a new tab` : 'Opens in a new tab';
       break;
     case '_parent':
-      ariaLabel = `${ title } opens in the parent frame`;
+      targetAriaLabel = title ? `${ title } opens in the parent frame` : 'Opens in the parent frame';
       break;
     case '_top':
-      ariaLabel = `${ title } opens in the full body of the window`
+      targetAriaLabel = title ? `${ title } opens in the full window` : 'Opens in the full window';
       break;
     default:
-      ariaLabel = undefined
+      targetAriaLabel = undefined;
   };
 
   return (
     <Component
       { ...linkProps }
-      aria-label={ ariaLabel }
-      target={ target }
+      ref={ ref }
+      aria-label={ ariaLabelProp ?? targetAriaLabel }
+      target={ target === '_self' ? undefined : target }
       title={ title }
       className={
         cleanClasses(
