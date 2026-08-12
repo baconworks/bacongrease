@@ -28,7 +28,16 @@ primitives — button, dropdown, hamburger, icon, linear-gradient, link, modal, 
 spinner, plus the `cleanClasses` util). Storybook is the dev/dogfooding environment. Extracted from
 the ac-booking app; being generically re-proven.
 
-**Latest — `Link` audit fix** (ADR-0004; driven by `sales-platform/web` dogfooding it for real
+**Latest — `Modal` drag-select close fix** (driven by `sales-platform/web`, where it cost real data
+entry). `Modal` closed on any `click` whose target sat outside the panel. But a `click` fires on the
+nearest common ancestor of press and release, so **selecting text in a field by dragging** — press
+inside the panel, release a few pixels past its edge — produced a click targeting the backdrop, and the
+modal closed, discarding a half-filled form. It now tracks whether the press *started* on the backdrop
+(`onMouseDown`) and closes only when press **and** release were both outside: a drag begun inside never
+closes it, a genuine backdrop click still does. No ADR (a bug fix restoring intended behaviour, like the
+Dropdown reposition fix); no API change.
+
+**Recent — `Link` audit fix** (ADR-0004; driven by `sales-platform/web` dogfooding it for real
 navigation). Kept `Link` polymorphic (`as` swaps in Next.js/React Router) and fixed its contract:
 **consumer `aria-label` now wins** (a same-frame link previously had its `aria-label` clobbered with
 `undefined`; the "opens in a new tab" phrasing is now only a fallback), **`ref` is forwarded**

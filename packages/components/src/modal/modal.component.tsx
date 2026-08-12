@@ -38,16 +38,29 @@ const Modal = ({ children, className, open = false, onClose, ...divProps }: Moda
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [ open, onClose ]);
 
-  // close modal on background click
+  // close modal on background click — but only when the press STARTED on the background too.
+  //
+  // A `click` fires on the nearest common ancestor of where the press began and where it ended. So
+  // selecting text in a field by dragging — press inside the panel, release past its edge — produces a
+  // click whose target is the backdrop, and closing on that alone threw away whatever the user had typed.
+  // Tracking the press origin means a drag that starts inside the panel never closes it, however far it
+  // travels; a genuine backdrop click (press and release both outside) still does.
+  const pressedOnBackdrop = useRef(false);
+
+  const handleModalPointerDown = ( event: MouseEvent ) => {
+    pressedOnBackdrop.current = !modalRef.current?.contains(event.target as Node);
+  };
+
   const handleModalClick = ( event: MouseEvent ) => {
-    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-      onClose?.()
-    };
+    const releasedOnBackdrop = modalRef.current && !modalRef.current.contains(event.target as Node);
+    if (releasedOnBackdrop && pressedOnBackdrop.current) onClose?.();
+    pressedOnBackdrop.current = false;
   };
 
   if (!modalRoot || !open) return;
   return createPortal(
     <div
+      onMouseDown={ handleModalPointerDown }
       onClick={ handleModalClick }
       className={
         cleanClasses(
