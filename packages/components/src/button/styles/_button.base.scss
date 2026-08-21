@@ -44,10 +44,13 @@
   &--primary {
     color: var(--accent-contrast);
     background-color: var(--accent);
-    // LITERAL timing (like the other variants), not var() tokens: a var() timing value in this
-    // transition doesn't apply here and the hover snapped. The hover COLOUR stays a token
-    // (--accent-hover, a resolved palette shade — color-mix targets don't animate in a transition).
-    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+    // The SAME timing as every other variant. This was 0.2s ease-out while the rest of the library ran at
+    // 0.5s ease-in-out, and against its neighbours the primary read as if it had no transition at all —
+    // ease-out front-loads, so it was ~70% of the way there in the first 85ms. It always did animate; it
+    // was just four times quicker than the button beside it. Sass variables, not var() tokens: a var()
+    // timing in this transition did not apply and the hover snapped (kept from the original note).
+    transition: background-color buttonVariables.$button-transition-timing buttonVariables.$button-transition-function,
+                color buttonVariables.$button-transition-timing buttonVariables.$button-transition-function;
 
     &:hover:not(:disabled) {
       background-color: var(--accent-hover);
