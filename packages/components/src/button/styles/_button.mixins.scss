@@ -55,10 +55,18 @@
   background: none;
   border: $borderWidth $borderStyle $color;
   color: $color;
+  // The base button has no border, so drawing one here would make an outlined button TALLER and WIDER than
+  // a filled one — 39px against 35px where the two sit side by side in a row. The border is taken out of the
+  // padding instead, so an outline is a change of look and never a change of size. (Bootstrap reserves a
+  // transparent border on every button for the same reason; taking it from the padding keeps the filled
+  // buttons, which are the common case, at exactly the size they already are.)
+  padding: calc(#{buttonVariables.$button-padding} - #{$borderWidth});
   transition: color $transitionTiming $transitionFunction,
               border $transitionTiming $transitionFunction;
 
   &:hover:not(:disabled) {
+    // The BACKGROUND stays out of it by design: an outline button is its outline and its text, and those
+    // are what lighten on hover.
     background: none;
     color:  color.scale(
               $color: $color,

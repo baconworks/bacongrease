@@ -1,6 +1,6 @@
 ---
 status: active
-date: 2026-07-22
+date: 2026-08-21
 tags: [meta, handoff]
 ---
 
@@ -28,7 +28,39 @@ primitives — button, dropdown, hamburger, icon, linear-gradient, link, modal, 
 spinner, plus the `cleanClasses` util). Storybook is the dev/dogfooding environment. Extracted from
 the ac-booking app; being generically re-proven.
 
-**Latest — `Modal` drag-select close fix** (driven by `sales-platform/web`, where it cost real data
+**Latest — two `Button` defects, surfaced building `sales-platform/web`'s deal command bar.** Both are
+fixes, not decisions, so **no ADR** (the owner's call: *"I dont think we need a whole adr just for fixing
+the button outline size"*).
+
+- **An outlined button was bigger than a filled one.** The base button has no border, so
+  `setButtonOutlineStyles` drawing a 2px one added 4px to both dimensions — **39px against 35px** where the
+  two sat side by side in a row. The border now comes **out of the padding**
+  (`calc($button-padding - $borderWidth)`), so an outline is a change of look and never a change of size.
+  Bootstrap reserves a transparent border on every button for the same reason; taking it from the padding
+  instead keeps filled buttons, the common case, at exactly the size they already were. **Nothing used
+  `outline` before this** (one Storybook story), so nothing existing shifts.
+- **The primary variant looked like it had no hover transition.** It ran at `0.2s ease-out` while every other
+  variant runs at `0.5s ease-in-out`; ease-out front-loads, so it was ~70% of the way there in the first
+  85ms, and beside a 0.5s neighbour that reads as an instant jump. It now uses
+  `$button-transition-timing` / `$button-transition-function` like the rest. **It was never broken** — a
+  frame-accurate probe (`requestAnimationFrame` + `performance.now()`) shows it always interpolated cleanly:
+  0.599 → 0.615 → 0.635 → 0.651 → 0.659, settled at 237ms. Probing with `setTimeout` in headless Chrome is
+  what made it look like a jump; `setTimeout` does not advance animation frames.
+
+**Considered and reverted:** giving the outline hover a background wash of its own colour. The owner: *"The
+background is not supposed to change. the outline and the text are supposed to. That's how it was designed."*
+Reverted whole — `background: none` in both states, `color` and `border` alone transitioned.
+
+**Open, for a later call:** the greyscale outline's hover is nearly invisible by consequence of that design —
+`color.scale` on pure black lightens it to `#484848`, moving the button's only two marks *toward* a white
+page, so it reads as receding rather than lifting. It is far more legible on the primary outline
+(`#057abd` → `#53b1f8`), which lightens a saturated colour. Options within the design: darken instead of
+lighten on a light theme, thicken the border on hover, or stop using black for a neutral outline. Also open:
+**`Button` renders its `icon` at the icon's own size**, so an icon button is ~1.3px taller than a plain one
+(16px icon in a 15px text line box) — `web/`'s "Actions" menu trigger measures 36.3px against its row's 35.0.
+Fixing it means deciding how `Button` sizes icons, which touches every icon button in both apps.
+
+**Recent — `Modal` drag-select close fix** (driven by `sales-platform/web`, where it cost real data
 entry). `Modal` closed on any `click` whose target sat outside the panel. But a `click` fires on the
 nearest common ancestor of press and release, so **selecting text in a field by dragging** — press
 inside the panel, release a few pixels past its edge — produced a click targeting the backdrop, and the
