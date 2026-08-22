@@ -77,6 +77,13 @@ without the caveat that made it wrong.
 - Still `position: absolute`, so an ancestor with `overflow: hidden` can clip it. Viewport clamping does
   not change that; a consumer whose trigger sits inside a clipping ancestor needs a portalled control
   instead.
+- **A CLOSED dropdown had to stop occupying the layout, and this change is what exposed it.** Freeing the
+  consumer from wrapping its trigger in a positioned ancestor meant the account menu stopped doing so — and
+  a closed box, hidden with `visibility: hidden` but never yet positioned (the positioning pass returns
+  early unless `open`), then sat at its STATIC place, which for a menu anchored near the right edge is off
+  the side of the page. Every route in the consuming app carried a 160px horizontal scrollbar for a menu
+  nobody had opened. Closed is now `display: none`: nothing measures the box while it is closed, so
+  removing it from the layout costs nothing, and it is measured normally on the open commit that follows.
 
 ### Locked in
 
