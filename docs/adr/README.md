@@ -89,3 +89,15 @@ tags: [decision]
   target-change label is only a fallback), **forward `ref`** (`ComponentPropsWithRef`), make
   **`title` optional**, and stop emitting `target="_self"` — to make it correct and
   dogfoodable, accepting only a backward-compatible widening of `title`.
+- [`0005`](./0005-dropdown-clamps-to-the-viewport.md) — In the context of `Dropdown`
+  promising to shift to a screen edge rather than overflow it, facing a consumer
+  (`sales-platform`'s deal Actions menu) whose menu ran off the right anyway, we found it
+  measured the edge from its **offsetParent** rather than the viewport — the two agree only
+  when that ancestor spans the screen, as it did for the one consumer it was proven against,
+  and a snug positioned wrapper inverts the arithmetic into a silent `left: 0`. We chose to
+  **clamp to the viewport** (`documentElement.clientWidth`, so a scrollbar is excluded) and
+  convert into offsetParent coordinates only to write `left`, and to **clamp the caret** a
+  caret's width in from either end — to let a consumer wrap a trigger however it likes,
+  accepting that a dropdown inside a scrolling container is now clamped to the screen rather
+  than that container (which wants a portal, not a different clamp) and that `overflow: hidden`
+  on an ancestor still clips. Removes the warning `account-menu.styles.scss` had to carry.

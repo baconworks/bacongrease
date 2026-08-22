@@ -60,6 +60,16 @@ lighten on a light theme, thicken the border on hover, or stop using black for a
 (16px icon in a 15px text line box) — `web/`'s "Actions" menu trigger measures 36.3px against its row's 35.0.
 Fixing it means deciding how `Button` sizes icons, which touches every icon button in both apps.
 
+**Recent — `Dropdown` clamps to the viewport** (ADR-0005; driven by `sales-platform`'s deal-page Actions
+menu, which ran off the right of the screen). It measured the screen edge from its **offsetParent**, which
+only equals the viewport when that ancestor happens to span it — as it did for `AccountMenu` inside a
+full-width `Header`, the one consumer it was proven against. Wrap the trigger in a snug positioned box (the
+ordinary popover recipe) and the arithmetic inverts to a silent `left: 0`, opening at the trigger and
+running off the side. It now clamps in viewport coordinates (`documentElement.clientWidth`, so a scrollbar
+is excluded) and converts to offsetParent coordinates only to write `left`; the caret is clamped a caret's
+width in from either end. **A consumer may now wrap a trigger however it likes** — the warning
+`account-menu.styles.scss` carried about not giving it a positioning context is gone.
+
 **Recent — `Modal` drag-select close fix** (driven by `sales-platform/web`, where it cost real data
 entry). `Modal` closed on any `click` whose target sat outside the panel. But a `click` fires on the
 nearest common ancestor of press and release, so **selecting text in a field by dragging** — press
