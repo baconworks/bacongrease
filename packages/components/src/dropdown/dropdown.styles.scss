@@ -20,9 +20,18 @@ $dropdown-padding: 1rem;
   width: max-content;
   z-index: 3002;
 
+  // A CLOSED DROPDOWN IS NOT ON THE PAGE AT ALL. `visibility: hidden` alone hides it from sight and from a
+  // screen reader but keeps its box in the layout, and an absolutely positioned box with no inline position
+  // yet — one that has never been opened, so `positionDropdown` has never run — sits at its STATIC place,
+  // which for a menu anchored near the right edge is off the side of the page. Every route then carried a
+  // horizontal scrollbar for a menu nobody had opened.
+  //
+  // This surfaced only once a consumer stopped wrapping the trigger in a positioned ancestor, which this
+  // component's own change invited it to do (ADR-0005). Nothing measures the box while it is closed — the
+  // positioning effect returns early unless `open` — so removing it from the layout costs nothing, and it
+  // is measured normally on the open commit that follows.
   &--closed {
-    visibility: hidden;
-    pointer-events: none;
+    display: none;
   }
 
   &--open {

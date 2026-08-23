@@ -1,7 +1,7 @@
 .account-menu {
-  // No positioning context here on purpose: the Dropdown clamps within its offsetParent, so it must
-  // resolve to a wide ancestor (the header / page), not this ~3.6rem wrapper — otherwise it can't
-  // keep itself inside the viewport with the caret centered under the trigger.
+  // No positioning context needed: the Dropdown clamps to the VIEWPORT (ADR-0005), so it stays on screen
+  // whatever this wrapper's width is. It used to clamp within its offsetParent, and this file carried a
+  // warning not to give it one — that constraint is gone.
 
   // The circle trigger — one glyph centered, so flex is enough here. Size is a token with a
   // standalone default; a host (the Header) can drive it proportionally to its own height.

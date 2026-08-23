@@ -21,13 +21,21 @@ interface DropdownProps extends ComponentPropsWithoutRef<'div'> {
   variant?: 'down' | 'up';
 };
 
-/** The dropdown down is designed to automatically position itself
-  * centered underneath its target component unless that would cause it to
-  * overflow to the right or left. In that case, the dropdown positions
-  * itself at the right or left edge while the carat maintains center position
-  * under the target component. It extends ComponentPropsWithRef to allow it to
-  * accept a ref prop in order to make these calculations.
-*/
+/**
+ * A floating box that positions itself centred under the control that opened it, and — when centring
+ * would run it off the left or right of the SCREEN — shifts to that edge while the caret stays centred
+ * under the control, so it still points at what opened it.
+ *
+ * It clamps to the VIEWPORT. A caller may put the trigger in whatever wrapper suits it, positioned or
+ * not, snug or wide: the offsetParent decides only which coordinates the final `left` is written in.
+ * (It used to measure the screen edge from the offsetParent, which meant it only stayed on screen when
+ * that ancestor happened to span the viewport — see ADR-0005.)
+ *
+ * It also owns dismissal: click away, Escape, and returning focus to the trigger on close. A caller
+ * that adds its own copies of those will have two handlers racing.
+ *
+ * `targetRef` is the trigger to measure against. `variant` opens it downwards or upwards.
+ */
 const Dropdown = ({
   children,
   className,
@@ -54,27 +62,41 @@ const Dropdown = ({
     const targetRect = target.getBoundingClientRect();
     const targetCenter = targetRect.left + targetRect.width / 2;
 
-    // calculate dropdown's centered position under target
     const dropdownWidth = dropdown.offsetWidth;
+
+    // WHERE IT WANTS TO BE, in VIEWPORT coordinates: centred under the trigger.
+    const wantedLeft = targetCenter - dropdownWidth / 2;
+
+    // CLAMPED TO THE VIEWPORT — not to the offsetParent, which is what this used to do. The offsetParent
+    // is only the coordinate system the `left` is finally written in; it has nothing to do with where the
+    // screen ends. Measuring the edge from it meant the component only stayed on screen when its
+    // offsetParent happened to span the viewport, and collapsed to `left: 0` (opening at the trigger and
+    // running off the side) whenever a caller wrapped the trigger in a snug positioned box — which is the
+    // ordinary thing to do, and what AccountMenu carried a comment to warn against.
+    // `clientWidth` rather than `innerWidth`: it excludes a vertical scrollbar, so the box does not tuck
+    // underneath one.
+    const edgeMargin = 10;
+    const viewportWidth = document.documentElement.clientWidth;
+    const maxLeft = viewportWidth - dropdownWidth - edgeMargin;
+    // `max` last, so a dropdown wider than the viewport pins to the left edge rather than off the left.
+    const left = Math.max(edgeMargin, Math.min(wantedLeft, maxLeft));
+
+    // Written back in the offsetParent's coordinates. Null offsetParent means a fixed-position ancestor,
+    // where the viewport IS the coordinate system — so an offset of 0 is already right.
     const offsetParent = dropdown.offsetParent as HTMLElement | null;
     const offsetParentLeft = offsetParent?.getBoundingClientRect().left ?? 0;
-    let dropdownLeftPosition = targetCenter - offsetParentLeft - dropdownWidth / 2;
+    dropdown.style.left = `${ left - offsetParentLeft }px`;
 
-    // prevent dropdown from overflowing left/right edges
-    const offsetParentWidth = offsetParent?.offsetWidth ?? window.innerWidth;
-    const rightMarginOffset = 10;
-    const maxLeft = offsetParentWidth - dropdown.offsetWidth - rightMarginOffset;
-
-    dropdownLeftPosition = Math.max(0, Math.min(dropdownLeftPosition, maxLeft));
-
-    // set the left position in the dropdown's style prop
-    dropdown.style.left = `${ dropdownLeftPosition }px`;
-
-    const dropdownRect = dropdown.getBoundingClientRect();
+    // THE CARET HOLDS ITS PLACE UNDER THE TRIGGER wherever the box ended up — that is what keeps the menu
+    // pointing at the control that opened it once it has shifted to an edge. It is kept a caret's width in
+    // from either end, so it never hangs off the box's own corner when the trigger is near the screen edge.
     const caret = dropdown.querySelector('.dropdown_caret') as HTMLElement | null;
-    const caretLeft = targetCenter - dropdownRect.left;
-
-    if (caret) caret.style.left = `${ caretLeft - 6 }px`;
+    if (caret) {
+      const caretWidth = caret.offsetWidth || 12;
+      const wantedCaretLeft = targetCenter - left - caretWidth / 2;
+      const maxCaretLeft = dropdownWidth - caretWidth * 2;
+      caret.style.left = `${ Math.max(caretWidth, Math.min(wantedCaretLeft, maxCaretLeft)) }px`;
+    }
   }, [ open, targetRef, dropdownRef ]);
 
   // position dropdown on open
