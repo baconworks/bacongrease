@@ -99,6 +99,13 @@ utils behind a client boundary.
   `onMouseEnter`, call the one the caller passed as well, or the caller's is silently ignored.
   A component made of several elements (Modal, Sidenav) should **not** do this — give each
   part its own named properties instead.
+- **A portaled child is INSIDE the component that renders it.** React routes events through
+  the React tree, not the DOM tree, so a menu a consumer portals to `<body>` still bubbles its
+  events to the handlers of whatever rendered it — while sitting nowhere near it in the DOM. Any
+  "did this happen outside me?" test written as `ref.contains(event.target)` therefore answers
+  **no** for a node the component owns, and acts on a press it should have ignored. Test the node
+  you actually mean (`event.target === event.currentTarget` for a backdrop), never the negation of
+  a different node. This cost `Modal` a real bug — ADR-0006.
 - **Accessibility is a requirement, not a finishing touch (owner preference).**
   Every component must meet the WCAG 2.1 AA accessibility standard: use the right
   HTML element for the job; tie every label to its input; make sure every clickable

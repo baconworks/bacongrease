@@ -1,6 +1,6 @@
 ---
 status: active
-date: 2026-08-21
+date: 2026-09-02
 tags: [meta, handoff]
 ---
 
@@ -59,6 +59,23 @@ lighten on a light theme, thicken the border on hover, or stop using black for a
 **`Button` renders its `icon` at the icon's own size**, so an icon button is ~1.3px taller than a plain one
 (16px icon in a 15px text line box) — `web/`'s "Actions" menu trigger measures 36.3px against its row's 35.0.
 Fixing it means deciding how `Button` sizes icons, which touches every icon button in both apps.
+
+**Latest — the backdrop is a node, not everything outside the panel** (ADR-0006; driven by
+`sales-platform`'s contact pickers, where choosing a contact closed the whole dialog). `Modal` decided
+"backdrop" with `!modalRef.contains(event.target)` — *not the panel*, which is a bigger set than *the
+backdrop*. A consumer that portals a dropdown to `<body>` to escape the panel's clipping (ADR-0005 names
+that as the answer for a box in its own scroll area, and the app took it) makes a node that is **a React
+child of the modal and not a DOM descendant of the panel** — so its events bubble into these handlers,
+`contains` answers no, and every press on an option read as a backdrop press. Both handlers now test
+**`event.target === event.currentTarget`**, so anything the modal owns answers no wherever the DOM put it;
+the drag-select protection (press AND release both on the backdrop) is unchanged, and `modalRef` is gone.
+
+**It hid behind a second bug.** In the app the portaled list was destroying the option before the click
+landed, so nothing reached this handler at all — the two cancelled into "the picker does nothing", which is
+why the symptom was undiagnosable. The app-side half is `sales-platform`'s ADR-0227.
+
+**No regression test — this package has no test runner** (`typecheck`, `build`, `storybook`). Worth adding
+one; it is the obvious next infrastructure gap and it is what would have caught this.
 
 **Recent — `Dropdown` clamps to the viewport** (ADR-0005; driven by `sales-platform`'s deal-page Actions
 menu, which ran off the right of the screen). It measured the screen edge from its **offsetParent**, which
