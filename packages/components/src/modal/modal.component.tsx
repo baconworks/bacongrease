@@ -17,7 +17,6 @@ interface ModalProps extends ComponentPropsWithoutRef<'div'> {
 };
 
 const Modal = ({ children, className, open = false, onClose, ...divProps }: ModalProps) => {
-  const modalRef = useRef<HTMLDivElement>(null);
   const [ modalRoot, setModalRoot ] = useState<HTMLElement | null>(null);
 
   // set modal root on mount — prefer a dedicated `#modal-root`, otherwise
@@ -45,15 +44,21 @@ const Modal = ({ children, className, open = false, onClose, ...divProps }: Moda
   // click whose target is the backdrop, and closing on that alone threw away whatever the user had typed.
   // Tracking the press origin means a drag that starts inside the panel never closes it, however far it
   // travels; a genuine backdrop click (press and release both outside) still does.
+  //
+  // THE BACKDROP IS THIS ELEMENT ITSELF, which is why the test is `target === currentTarget` rather than
+  // "outside the panel". A dropdown belonging to a field in the panel may be PORTALED to <body> to escape
+  // the panel's clipping — it is then a React child of the modal, so its events bubble to these handlers,
+  // while sitting outside the panel in the DOM. Asking "is the target inside the panel?" called every press
+  // on such a menu a backdrop press and closed the modal underneath the option being chosen. Asking whether
+  // the press landed on the backdrop NODE answers no for anything the modal owns, portaled or not.
   const pressedOnBackdrop = useRef(false);
 
   const handleModalPointerDown = ( event: MouseEvent ) => {
-    pressedOnBackdrop.current = !modalRef.current?.contains(event.target as Node);
+    pressedOnBackdrop.current = event.target === event.currentTarget;
   };
 
   const handleModalClick = ( event: MouseEvent ) => {
-    const releasedOnBackdrop = modalRef.current && !modalRef.current.contains(event.target as Node);
-    if (releasedOnBackdrop && pressedOnBackdrop.current) onClose?.();
+    if (event.target === event.currentTarget && pressedOnBackdrop.current) onClose?.();
     pressedOnBackdrop.current = false;
   };
 
@@ -72,7 +77,7 @@ const Modal = ({ children, className, open = false, onClose, ...divProps }: Moda
       }
       { ...divProps }
     >
-      <div ref={ modalRef } className="modal_content">
+      <div className="modal_content">
         { children }
       </div>
     </div>,

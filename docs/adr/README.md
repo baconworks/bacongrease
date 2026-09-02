@@ -101,3 +101,16 @@ tags: [decision]
   accepting that a dropdown inside a scrolling container is now clamped to the screen rather
   than that container (which wants a portal, not a different clamp) and that `overflow: hidden`
   on an ancestor still clips. Removes the warning `account-menu.styles.scss` had to carry.
+- [`0006`](./0006-the-backdrop-is-a-node-not-everything-outside-the-panel.md) — In the
+  context of `Modal` closing on a backdrop click, facing a consumer
+  (`sales-platform`'s contact pickers) whose dialog closed underneath the option being
+  chosen, we found the backdrop test was **`!panel.contains(target)`** — *not the panel*,
+  which is a larger set than *the backdrop*: a dropdown portaled to `<body>` to escape the
+  panel's clipping is a React child of the modal (so its events bubble to these handlers)
+  while sitting outside the panel in the DOM, and so read as a backdrop press. We chose
+  **`event.target === event.currentTarget`** on both the press and the release — the
+  backdrop is a NODE — to make any portaled control usable inside a dialog without the
+  Modal knowing it portals, accepting that this relies on the menu being rendered inside
+  the modal's React tree, that the root element is now locked in as the backdrop, and that
+  the package has no test runner to guard it. Drops `modalRef`; keeps the drag-select
+  protection unchanged.
