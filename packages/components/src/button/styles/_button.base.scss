@@ -136,8 +136,18 @@
     @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-tertiary);
   }
 
+  // THE GREYSCALE OUTLINE IS THE PAGE'S OWN TEXT COLOUR, so it reads on a dark page too. A fixed black drew a black
+  // outline and black words on a black page in dark mode — the button was there and invisible. The outline mixin
+  // lightens a Sass colour on hover, which a runtime token cannot be, so the hover mixes toward the page instead.
   &--greyscale.button--outline {
     @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-black);
+    color: var(--foreground);
+    border-color: var(--foreground);
+
+    &:hover:not(:disabled) {
+      color: color-mix(in oklch, var(--foreground) 70%, var(--background));
+      border-color: color-mix(in oklch, var(--foreground) 70%, var(--background));
+    }
   }
 
   &--microsoft-light.button--outline {
