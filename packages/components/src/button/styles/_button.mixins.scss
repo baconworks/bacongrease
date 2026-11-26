@@ -50,8 +50,12 @@
   $borderWidth: buttonVariables.$button-border-width,
   $borderStyle: solid,
   $transitionTiming: buttonVariables.$button-transition-timing,
-  $transitionFunction: buttonVariables.$button-transition-function
+  $transitionFunction: buttonVariables.$button-transition-function,
+  // The colour on hover — by default the colour lightened at compile time. A colour given as a CSS variable cannot be
+  // lightened by `color.scale`, so it passes its own (`color-mix`), as the greyscale outline does.
+  $hoverColor: null
 ) {
+  $hover: if($hoverColor, $hoverColor, color.scale($color: $color, $lightness: globalVariables.$color-scale-lightness-md));
   background: none;
   border: $borderWidth $borderStyle $color;
   color: $color;
@@ -68,16 +72,8 @@
     // The BACKGROUND stays out of it by design: an outline button is its outline and its text, and those
     // are what lighten on hover.
     background: none;
-    color:  color.scale(
-              $color: $color,
-              $lightness: globalVariables.$color-scale-lightness-md
-            );
-    border: $borderWidth
-            $borderStyle
-            color.scale(
-              $color: $color,
-              $lightness: globalVariables.$color-scale-lightness-md
-            );
+    color: $hover;
+    border: $borderWidth $borderStyle $hover;
   }
 }
 

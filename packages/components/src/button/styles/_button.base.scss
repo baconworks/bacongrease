@@ -69,10 +69,26 @@
     );
   }
 
+  // THE GREYSCALE VARIANTS ARE THE THEME'S OWN TEXT COLOUR (ADR-0003, migrated on intake). They read the palette's pure
+  // black, which a dark theme never changes — so on a dark page the outline's text and border, and the solid button's
+  // fill, were black on near-black and could not be seen (sales-platform, 2026-11-25: its wizard's Previous). Read as
+  // `--foreground` they are the page's text colour in either theme: the solid button is that colour with the page's
+  // background as its text; the outline and the text button are that colour alone.
+  //
+  // THE HOVER IS THE ONE THEY HAD: 40% of the way toward the page, as `color.scale($lightness: 40%)` moved black toward a
+  // white page — now `color-mix`, which reads a variable where `color.scale` cannot (the primary's rule above). On a dark
+  // page that is toward the dark. Whether a neutral hover should move toward the page at all is still open (handoff).
   &--greyscale {
-    @include buttonMixins.setButtonVariant(
-      $backgroundColor: buttonVariables.$button-color-black
-    );
+    font-family: inherit;
+    font-weight: inherit;
+    color: var(--background);
+    background-color: var(--foreground);
+    transition: color buttonVariables.$button-transition-timing buttonVariables.$button-transition-function,
+                background-color buttonVariables.$button-transition-timing buttonVariables.$button-transition-function;
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in oklch, var(--foreground) 60%, var(--background));
+    }
   }
 
   &--microsoft-dark {
@@ -137,7 +153,7 @@
   }
 
   &--greyscale.button--outline {
-    @include buttonMixins.setButtonOutlineStyles(buttonVariables.$button-color-black);
+    @include buttonMixins.setButtonOutlineStyles(var(--foreground), $hoverColor: color-mix(in oklch, var(--foreground) 60%, var(--background)));
   }
 
   &--microsoft-light.button--outline {
@@ -198,7 +214,16 @@
 
   &--greyscale.button--text,
   &--greyscale.button--text.button--outline {
-    @include buttonMixins.setButtonTextStyles(buttonVariables.$button-color-black);
+    color: var(--foreground);
+    background: none;
+    border: none;
+    transition: color buttonVariables.$button-transition-timing buttonVariables.$button-transition-function;
+
+    &:hover:not(:disabled) {
+      color: color-mix(in oklch, var(--foreground) 60%, var(--background));
+      background: none;
+      border: none;
+    }
   }
 
   &--primary.button--text.button--gradient {

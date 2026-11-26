@@ -1,6 +1,6 @@
 ---
 status: active
-date: 2026-09-02
+date: 2026-11-26
 tags: [meta, handoff]
 ---
 
@@ -28,7 +28,16 @@ primitives — button, dropdown, hamburger, icon, linear-gradient, link, modal, 
 spinner, plus the `cleanClasses` util). Storybook is the dev/dogfooding environment. Extracted from
 the ac-booking app; being generically re-proven.
 
-**Latest — two `Button` defects, surfaced building `sales-platform/web`'s deal command bar.** Both are
+**Latest — the greyscale `Button` follows the theme** (ADR-0003, migrated on intake; a fix, so no ADR). Its three
+variants — solid, outline, text — read the palette's pure black, which a dark theme never changes, so on a dark page
+`sales-platform`'s wizard footer **Previous** (greyscale outline) was black text and a black border on near-black:
+gone. They now read `--foreground` (the solid one takes `--background` as its text), so in light they are the page's
+text colour (`greyscale-1000`, a shade off the old pure black) and in dark a light grey. The hover is the one they had —
+40% of the way toward the page, now a `color-mix` because `color.scale` cannot read a variable; `setButtonOutlineStyles`
+gained a `$hoverColor` for that, every other outline unchanged (the built CSS diffed: only greyscale rules moved). The
+**open** hover question below still stands — on a dark page "toward the page" is toward the dark.
+
+**Earlier — two `Button` defects, surfaced building `sales-platform/web`'s deal command bar.** Both are
 fixes, not decisions, so **no ADR** (the owner's call: *"I dont think we need a whole adr just for fixing
 the button outline size"*).
 
