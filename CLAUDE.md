@@ -297,9 +297,11 @@ both green, committed on `main`):
   Palette moved to **OKLCH**; a **system/status** color family added (success/warning/
   danger/info); the client-named `ac` family renamed to `custom`; superseded
   `*Transparent` families removed (use `color-mix`). Consumed by `sales-platform/web`.
-- ✅ **Button primary variant migrated to tokens** (incremental audit-on-intake) —
-  themes via `--accent`/`--accent-contrast` with a `color-mix` hover. Other variants
-  still read the palette and migrate as they're adopted.
+- ✅ **Button primary and greyscale variants migrated to tokens** (incremental audit-on-intake) —
+  primary themes via `--accent`/`--accent-contrast`; greyscale (solid, outline, text) is
+  `--foreground`, the solid one with `--background` as its text; each hover a `color-mix`.
+  Secondary, tertiary, the gradients and Microsoft still read the palette and migrate as
+  they're adopted.
 
 **Not done yet — likely next steps, roughly in priority order:**
 
@@ -308,8 +310,8 @@ both green, committed on `main`):
    app. That's the true end-to-end test — do it next (either `yarn add` the
    packed tarballs, or a `link:`/`portal:` dep, into `../ac-booking`).
 2. **Migrate the remaining components to tokens** (audit-on-intake). **Done: Button** (solid
-   primary), **Sidenav + Hamburger** (tokenized + reworked — see below). Still on raw `getColor()`:
-   the other Button variants and dropdown / modal / side-drop / link / spinner / icon. Migrate each
+   primary; greyscale solid, outline and text), **Sidenav + Hamburger** (tokenized + reworked — see below). Still on raw `getColor()`:
+   the other Button variants (secondary, tertiary, gradients, Microsoft) and dropdown / modal / side-drop / link / spinner / icon. Migrate each
    as it's pulled into a consuming app — reworking `color.scale` hovers to `color-mix` (SCSS colour
    functions can't touch a CSS variable).
    - **Sidenav** (brought in for `sales-platform/web`): tokenized (themes + subtree `data-theme`);
